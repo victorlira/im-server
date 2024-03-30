@@ -56,6 +56,10 @@ public class GetGroupInfoAction extends RobotAction {
                     pojoGroupInfo.setJoin_type(groupInfo.getJoinType());
                     pojoGroupInfo.setPrivate_chat(groupInfo.getPrivateChat());
                     pojoGroupInfo.setSearchable(groupInfo.getSearchable());
+                    pojoGroupInfo.setMax_member_count(groupInfo.getMemberCount());
+                    pojoGroupInfo.setHistory_message(groupInfo.getHistoryMessage());
+                    pojoGroupInfo.setSuper_group(groupInfo.getSuperGroup()>0);
+                    pojoGroupInfo.setDeleted(groupInfo.getDeleted()>0);
                     result = RestResult.ok(pojoGroupInfo);
                 }
                 setResponseContent(result, response);

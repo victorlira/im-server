@@ -1,5 +1,6 @@
 package cn.wildfirechat.pojos;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,3 +34,4 @@ public class GetUserSessionResult {
         userSessions = new ArrayList<>();
     }
 }
+

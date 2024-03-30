@@ -1368,7 +1368,7 @@ public class MemoryMessagesStore implements IMessagesStore {
             event.type = type;
             PojoGroupInfo pojoGroupInfo = new PojoGroupInfo();
             event.groupInfo = pojoGroupInfo;
-            if (groupInfo != null) {
+            if (groupInfo != null && groupInfo.getDeleted() == 0) {
                 pojoGroupInfo.setExtra(groupInfo.getExtra());
                 pojoGroupInfo.setName(groupInfo.getName());
                 pojoGroupInfo.setOwner(groupInfo.getOwner());
@@ -1900,7 +1900,7 @@ public class MemoryMessagesStore implements IMessagesStore {
         WFCMessage.GroupInfo groupInfo = mIMap.get(groupId);
         if (groupInfo == null) {
             groupInfo = databaseStore.getPersistGroupInfo(groupId);
-            if (groupInfo != null) {
+            if (groupInfo != null && groupInfo.getDeleted() == 0) {
                 mIMap.set(groupId, groupInfo);
             } else {
                 return ErrorCode.ERROR_CODE_NOT_EXIST;
@@ -1985,7 +1985,7 @@ public class MemoryMessagesStore implements IMessagesStore {
         WFCMessage.GroupInfo groupInfo = mIMap.get(groupId);
         if (groupInfo == null) {
             groupInfo = databaseStore.getPersistGroupInfo(groupId);
-            if (groupInfo != null) {
+            if (groupInfo != null && groupInfo.getDeleted() == 0) {
                 mIMap.set(groupId, groupInfo);
             } else {
                 return ErrorCode.ERROR_CODE_NOT_EXIST;
@@ -2069,13 +2069,6 @@ public class MemoryMessagesStore implements IMessagesStore {
         ArrayList<WFCMessage.GroupInfo> out = new ArrayList<>();
         for (WFCMessage.UserRequest request : requests) {
             WFCMessage.GroupInfo groupInfo = mIMap.get(request.getUid());
-            if (groupInfo == null) {
-                groupInfo = databaseStore.getPersistGroupInfo(request.getUid());
-                if (groupInfo != null) {
-                    mIMap.set(request.getUid(), groupInfo);
-                }
-            }
-
             if (groupInfo != null && groupInfo.getUpdateDt() > request.getUpdateDt()) {
                 if(!isAdmin && !StringUtil.isNullOrEmpty(fromUser)) {
                     WFCMessage.GroupMember gm = getGroupMember(groupInfo.getTargetId(), fromUser);
@@ -2306,7 +2299,7 @@ public class MemoryMessagesStore implements IMessagesStore {
         IMap<String, WFCMessage.GroupInfo> groups = hzInstance.getMap(GROUPS_MAP);
         WFCMessage.GroupInfo groupInfo = groups.get(groupId);
         boolean isMute = false;
-        if (groupInfo != null) {
+        if (groupInfo != null && groupInfo.getDeleted() == 0) {
             if (groupInfo.getOwner().equals(memberId)) {
                 return ErrorCode.ERROR_CODE_SUCCESS;
             }

@@ -188,6 +188,8 @@ public final class BrokerConstants {
 
     public static final String GROUP_Disable_Stranger_Invite = "group.disable_stranger_invite";
 
+    public static final String GROUP_INFO_MARK_DELETION = "group.enable_mark_deletion";
+
     public static final String USER_HIDE_PROPERTIES = "user.hide_properties";
     public static final String USER_KEEP_DISPLAY_NAME_WHEN_DESTROY = "user.keep_display_name_when_destroy";
 
