@@ -22,6 +22,7 @@ public class PojoGroupInfo {
     int max_member_count;
     int history_message;
     boolean super_group;
+    boolean deleted;
 
     public String getTarget_id() {
         return target_id;
@@ -125,5 +126,13 @@ public class PojoGroupInfo {
 
     public void setSuper_group(boolean super_group) {
         this.super_group = super_group;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 }

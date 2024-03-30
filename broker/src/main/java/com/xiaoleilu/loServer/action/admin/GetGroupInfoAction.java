@@ -60,6 +60,7 @@ public class GetGroupInfoAction extends AdminAction {
                     pojoGroupInfo.setMax_member_count(groupInfo.getMemberCount());
                     pojoGroupInfo.setHistory_message(groupInfo.getHistoryMessage());
                     pojoGroupInfo.setSuper_group(groupInfo.getSuperGroup()>0);
+                    pojoGroupInfo.setDeleted(groupInfo.getDeleted()>0);
                     result = RestResult.ok(pojoGroupInfo);
                 }
                 setResponseContent(result, response);

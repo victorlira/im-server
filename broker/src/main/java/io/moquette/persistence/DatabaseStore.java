@@ -36,6 +36,7 @@ import java.util.function.Function;
 
 import static cn.wildfirechat.common.IMExceptionEvent.EventType.RDBS_Exception;
 import static cn.wildfirechat.proto.ProtoConstants.PersistFlag.Transparent;
+import static io.moquette.BrokerConstants.GROUP_INFO_MARK_DELETION;
 import static io.moquette.server.Constants.MAX_MESSAGE_QUEUE;
 import static cn.wildfirechat.proto.ProtoConstants.SearchUserType.*;
 import static win.liyufan.im.UserSettingScope.kUserSettingPrivacySearchable;
@@ -45,6 +46,7 @@ public class DatabaseStore {
     private final ThreadPoolExecutorWrapper mScheduler;
     private boolean disableRemoteMessageSearch = false;
     private boolean encryptMessage = false;
+    private boolean keepGroupInfo = false;
     public void setDisableRemoteMessageSearch(boolean disableRemoteMessageSearch) {
         this.disableRemoteMessageSearch = disableRemoteMessageSearch;
     }
@@ -55,6 +57,11 @@ public class DatabaseStore {
 
     public DatabaseStore(ThreadPoolExecutorWrapper scheduler) {
         this.mScheduler = scheduler;
+        try {
+            keepGroupInfo = Boolean.parseBoolean(Server.getServer().getConfig().getProperty(GROUP_INFO_MARK_DELETION, "false"));
+        } catch (Exception e) {
+
+        }
     }
 
     TreeMap<Long, Long> reloadUserMessageMaps(String userId) {
@@ -1425,7 +1432,8 @@ public class DatabaseStore {
                 ", `_join_type`" +
                 ", `_private_chat`" +
                 ", `_searchable`" +
-                ", `_member_dt`) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)" +
+                ", `_deleted`" +
+                ", `_member_dt`) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)" +
                 " ON DUPLICATE KEY UPDATE " +
                 "`_name` = ?," +
                 "`_portrait` = ?," +
@@ -1436,8 +1444,9 @@ public class DatabaseStore {
                 "`_mute` = ?" +
                 ", `_join_type` = ?" +
                 ", `_private_chat` = ?" +
-                ", `_searchable` = ?, " +
-                "`_member_dt` = ?";
+                ", `_searchable` = ?" +
+                ", `_deleted` = ?" +
+                ", `_member_dt` = ?";
 
 
             statement = connection.prepareStatement(sql);
@@ -1455,6 +1464,7 @@ public class DatabaseStore {
             statement.setInt(index++, groupInfo.getJoinType());
             statement.setInt(index++, groupInfo.getPrivateChat());
             statement.setInt(index++, groupInfo.getSearchable());
+            statement.setInt(index++, groupInfo.getDeleted());
             statement.setLong(index++, groupInfo.getMemberUpdateDt() == 0 ? System.currentTimeMillis() : groupInfo.getUpdateDt());
 
             statement.setString(index++, groupInfo.getName());
@@ -1467,6 +1477,7 @@ public class DatabaseStore {
             statement.setInt(index++, groupInfo.getJoinType());
             statement.setInt(index++, groupInfo.getPrivateChat());
             statement.setInt(index++, groupInfo.getSearchable());
+            statement.setInt(index++, groupInfo.getDeleted());
             statement.setLong(index++, groupInfo.getMemberUpdateDt() == 0 ? System.currentTimeMillis() : groupInfo.getUpdateDt());
             int count = statement.executeUpdate();
             LOG.info("Update rows {}", count);
@@ -3410,8 +3421,12 @@ public class DatabaseStore {
         PreparedStatement statement = null;
         try {
             connection = DBUtil.getConnection();
-            String sql = "delete from t_group where _gid = ?";
-
+            String sql;
+            if(keepGroupInfo) {
+                sql = "update t_group set _deleted = 1, _dt = _dt+1, _member_count = 0, _member_dt = _member_dt+1 where _gid = ?";
+            } else {
+                sql = "delete from t_group where _gid = ?";
+            }
 
             statement = connection.prepareStatement(sql);
             int index = 1;
