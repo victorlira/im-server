@@ -155,6 +155,7 @@ public final class BrokerConstants {
     public static final String MESSAGE_NO_Forward_Admin_Message = "message.no_forward_admin_message";
 
     public static final String MESSAGE_Push_Expired_Days = "message.push_expired_days";
+    public static final String MESSAGE_Force_Push_Types = "message.force_push_types";
 
     public static final String MESSAGE_Forward_With_Client_Info = "message.forward_with_client_info";
 

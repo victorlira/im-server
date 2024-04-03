@@ -155,6 +155,7 @@ public class MemoryMessagesStore implements IMessagesStore {
     private boolean mFriendRobotAutoAccept = true;
 
     private long mPushExpiredTimes = 604800000L;
+    private Set<Integer> mForcePushTypes = new HashSet<>();
 
     private boolean mMultiPlatformNotification = false;
     private boolean mMobileDefaultSilentWhenPCOnline = true;
@@ -255,6 +256,20 @@ public class MemoryMessagesStore implements IMessagesStore {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+
+        try {
+            String forcePushTypes = m_Server.getConfig().getProperty(BrokerConstants.MESSAGE_Force_Push_Types);
+            if(!StringUtil.isNullOrEmptyAfterTrim(forcePushTypes)) {
+                forcePushTypes = forcePushTypes.replace("，", ",");
+                for (String s : forcePushTypes.split(",")) {
+                    int type = Integer.parseInt(s.trim());
+                    if(type > 0) {
+                        mForcePushTypes.add(type);
+                    }
+                }
+            }
+        } catch (Exception e) {
         }
 
         try {
@@ -4611,6 +4626,11 @@ public class MemoryMessagesStore implements IMessagesStore {
     @Override
     public long getPushExpiredTimes() {
         return mPushExpiredTimes;
+    }
+
+    @Override
+    public Set<Integer> getForcePushTypes() {
+        return mForcePushTypes;
     }
 
     @Override

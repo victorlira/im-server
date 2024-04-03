@@ -21,7 +21,6 @@ import cn.wildfirechat.pojos.OutputMessageData;
 import cn.wildfirechat.proto.ProtoConstants;
 import cn.wildfirechat.proto.WFCMessage;
 import cn.wildfirechat.push.PushServer;
-import com.google.gson.Gson;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.util.StringUtil;
 import cn.wildfirechat.pojos.OutputNotifyChannelSubscribeStatus;
@@ -271,6 +270,7 @@ public class MessagesPublisher {
                 boolean isVoipSilent;
                 boolean isNoDisturb;
                 boolean isConvSilent = false;
+                boolean isForcePush = false;
                 if (pullType == ProtoConstants.PullType.Pull_ChatRoom) {
                     isSilent = true;
                     isConvSilent = true;
@@ -287,6 +287,11 @@ public class MessagesPublisher {
                             conversation = WFCMessage.Conversation.newBuilder().setType(conversationType).setLine(line).setTarget(sender).build();
                         } else {
                             conversation = WFCMessage.Conversation.newBuilder().setType(conversationType).setLine(line).setTarget(target).build();
+                        }
+
+                        if(m_messagesStore.getForcePushTypes().contains(messageContentType)) {
+                           LOG.info("The message type {} force push", messageContentType);
+                            isForcePush = true;
                         }
 
                         if (m_messagesStore.getUserConversationSilent(user, conversation)) {
@@ -369,17 +374,17 @@ public class MessagesPublisher {
                         continue;
                     }
 
-                    if (isConvSilent && !isVoip) {
+                    if (isConvSilent && !isVoip && !isForcePush) {
                         LOG.info("Silent of user or conversation");
                         continue;
                     }
 
-                    if (isSilent && !isVoip) {
+                    if (isSilent && !isVoip && !isForcePush) {
                         LOG.info("Silent of user");
                         continue;
                     }
 
-                    if(isVoip && isVoipSilent) {
+                    if(isVoip && isVoipSilent && !isForcePush) {
                         LOG.info("voip silent of user");
                         continue;
                     }

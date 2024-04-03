@@ -247,6 +247,7 @@ public interface IMessagesStore {
     boolean isRobotAutoAcceptFriendRequest();
 
     long getPushExpiredTimes();
+    Set<Integer> getForcePushTypes();
 
     List<Integer> getClientForbiddenSendTypes();
     List<Integer> getBlackListExceptionTypes();
