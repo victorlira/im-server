@@ -24,6 +24,7 @@ import com.google.protobuf.ByteString;
 import com.hazelcast.core.*;
 import com.hazelcast.util.StringUtil;
 import com.xiaoleilu.loServer.RestResult;
+import com.xiaoleilu.loServer.action.Action;
 import com.xiaoleilu.loServer.action.admin.AdminAction;
 import com.xiaoleilu.loServer.model.FriendData;
 import cn.wildfirechat.common.ErrorCode;
@@ -49,6 +50,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -73,6 +75,7 @@ import static io.moquette.BrokerConstants.*;
 import static io.moquette.server.Constants.MAX_CHATROOM_MESSAGE_QUEUE;
 import static io.moquette.server.Constants.MAX_MESSAGE_QUEUE;
 import static cn.wildfirechat.pojos.MyInfoType.*;
+import static win.liyufan.im.UserSettingScope.kUserSettingAddFriendNoVerify;
 import static win.liyufan.im.UserSettingScope.kUserSettingPCOnline;
 
 public class MemoryMessagesStore implements IMessagesStore {
@@ -3328,6 +3331,10 @@ public class MemoryMessagesStore implements IMessagesStore {
 
         HazelcastInstance hzInstance = m_Server.getHazelcastInstance();
         MultiMap<String, WFCMessage.FriendRequest> requestMap = hzInstance.getMultiMap(USER_FRIENDS_REQUEST);
+
+        WFCMessage.UserSettingEntry userSettingData = getUserSetting(request.getTargetUid(), kUserSettingAddFriendNoVerify, "");
+        boolean noVerify = userSettingData != null && "1".equals(userSettingData.getValue());
+
         Collection<WFCMessage.FriendRequest> requests = requestMap.get(userId);
         if (requests == null || requests.size() == 0) {
             requests = loadFriendRequest(requestMap, userId);
@@ -3342,7 +3349,7 @@ public class MemoryMessagesStore implements IMessagesStore {
             }
         }
 
-        if (existRequest != null && existRequest.getStatus() != ProtoConstants.FriendRequestStatus.RequestStatus_Accepted && !isAdmin) {
+        if (!noVerify && existRequest != null && existRequest.getStatus() != ProtoConstants.FriendRequestStatus.RequestStatus_Accepted && !isAdmin) {
             if (existRequest.getStatus() == ProtoConstants.FriendRequestStatus.RequestStatus_Rejected
                 && System.currentTimeMillis() - existRequest.getUpdateDt() < mFriendRejectDuration) {
                 return ErrorCode.ERROR_CODE_FRIEND_REQUEST_BLOCKED;
@@ -3384,13 +3391,19 @@ public class MemoryMessagesStore implements IMessagesStore {
             .setReason(request.getReason())
             .setExtra(request.getExtra())
             .setStatus(ProtoConstants.FriendRequestStatus.RequestStatus_Sent)
-            .setToReadStatus(false)
+            .setToReadStatus(noVerify)
             .setUpdateDt(System.currentTimeMillis())
             .build();
 
         databaseStore.persistOrUpdateFriendRequest(newRequest);
         requestMap.remove(userId);
         requestMap.remove(request.getTargetUid());
+
+
+        if(noVerify) {
+            WFCMessage.HandleFriendRequest handleFriendRequest = WFCMessage.HandleFriendRequest.newBuilder().setTargetUid(userId).setStatus(ProtoConstants.FriendRequestStatus.RequestStatus_Accepted).build();
+            ServerAPIHelper.sendRequest(request.getTargetUid(), null, IMTopic.HandleFriendRequestTopic, handleFriendRequest.toByteArray(), null, ProtoConstants.RequestSourceType.Request_From_User);
+        }
 
         head[0] = newRequest.getUpdateDt();
         return ErrorCode.ERROR_CODE_SUCCESS;

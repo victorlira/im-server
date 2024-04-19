@@ -20,4 +20,5 @@ public interface UserSettingScope {
     int kUserSettingPttSilent = 25;
     int kUserSettingGroupRemark = 26;
     int kUserSettingPrivacySearchable = 27;
+    int kUserSettingAddFriendNoVerify = 28;
 }
