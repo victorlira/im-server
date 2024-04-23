@@ -1136,7 +1136,16 @@ public class DatabaseStore {
                 }
 
                 if (!expired) {
-                    messages.add(message);
+                    boolean duplicated = false;
+                    for (WFCMessage.Message msg : messages) {
+                        if(message.getMessageId() == msg.getMessageId()) {
+                            duplicated = true;
+                            break;
+                        }
+                    }
+                    if(!duplicated) {
+                        messages.add(message);
+                    }
                 }
             }
 
