@@ -1720,8 +1720,19 @@ public class MemoryMessagesStore implements IMessagesStore {
             WFCMessage.GroupMember newOwner = null;
             for (WFCMessage.GroupMember member :members) {
                 if (!member.getMemberId().equals(operator) && member.getType() != GroupMemberType_Removed) {
-                    newOwner = member;
-                    break;
+                    if(newOwner == null) {
+                        newOwner = member;
+                    } else {
+                        if(newOwner.getType() == GroupMemberType_Silent && member.getType() != GroupMemberType_Silent) {
+                            newOwner = member;
+                        } else if(newOwner.getType() != GroupMemberType_Manager && member.getType() == GroupMemberType_Manager) {
+                            newOwner = member;
+                        } else if(newOwner.getType() == member.getType()) {
+                            if(newOwner.getCreateDt() > member.getCreateDt() && member.getCreateDt() > 0) {
+                                newOwner = member;
+                            }
+                        }
+                    }
                 }
             }
 
