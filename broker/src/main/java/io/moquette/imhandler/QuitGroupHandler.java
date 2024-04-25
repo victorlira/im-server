@@ -43,13 +43,13 @@ public class QuitGroupHandler extends GroupHandler<WFCMessage.QuitGroupRequest> 
             if (request.hasNotifyContent() && request.getNotifyContent().getType() > 0) {
                 sendGroupNotification(fromUser, request.getGroupId(), request.getToLineList(), request.getNotifyContent());
             } else {
-                WFCMessage.MessageContent content = new GroupNotificationBinaryContent(request.getGroupId(), fromUser, null, "").getQuitGroupNotifyContent();
+                WFCMessage.MessageContent content = new GroupNotificationBinaryContent(request.getGroupId(), fromUser, request.getKeepMsg()>0?"1":"0", "").getQuitGroupNotifyContent();
                 sendGroupNotification(fromUser, request.getGroupId(), request.getToLineList(), content);
             }
 
             if((m_messagesStore.getVisibleQuitKickoffNotification() & 0x01) > 0) {
                 Set<String> toUsers = m_messagesStore.getGroupManagers(request.getGroupId(), true);
-                WFCMessage.MessageContent content = new GroupNotificationBinaryContent(request.getGroupId(), fromUser, null, "").getQuitVisibleGroupNotifyContent();
+                WFCMessage.MessageContent content = new GroupNotificationBinaryContent(request.getGroupId(), fromUser, request.getKeepMsg()>0?"1":"0", "").getQuitVisibleGroupNotifyContent();
                 sendGroupNotification(fromUser, request.getGroupId(), request.getToLineList(), content, toUsers);
             }
         }
