@@ -2101,6 +2101,9 @@ public class MemoryMessagesStore implements IMessagesStore {
             if (groupInfo != null && groupInfo.getUpdateDt() > request.getUpdateDt()) {
                 if(!isAdmin && !StringUtil.isNullOrEmpty(fromUser)) {
                     WFCMessage.GroupMember gm = getGroupMember(groupInfo.getTargetId(), fromUser);
+                    if((gm == null || gm.getType() == GroupMemberType_Removed) && request.getUpdateDt() > 0) {
+                        continue;
+                    }
                     if(gm == null) {
                         groupInfo = groupInfo.toBuilder().setMemberUpdateDt(-1).build();
                     } else if(gm.getType() == GroupMemberType_Removed) {
