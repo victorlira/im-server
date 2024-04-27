@@ -135,7 +135,6 @@ public class NettyAcceptor implements ServerAcceptor {
                         }
                     }
                 })
-            .option(ChannelOption.SO_BACKLOG, 10240) // 服务端可连接队列大小
             .option(ChannelOption.SO_BACKLOG, nettySoBacklog)
             .option(ChannelOption.SO_REUSEADDR, nettySoReuseaddr)
             .childOption(ChannelOption.TCP_NODELAY, nettyTcpNodelay)
