@@ -2099,7 +2099,7 @@ public class MemoryMessagesStore implements IMessagesStore {
         for (WFCMessage.UserRequest request : requests) {
             WFCMessage.GroupInfo groupInfo = mIMap.get(request.getUid());
             if (groupInfo != null && groupInfo.getUpdateDt() > request.getUpdateDt()) {
-                if(!isAdmin && !StringUtil.isNullOrEmpty(fromUser)) {
+                if(!isAdmin && !StringUtil.isNullOrEmpty(fromUser) && groupInfo.getDeleted() == 0) {
                     WFCMessage.GroupMember gm = getGroupMember(groupInfo.getTargetId(), fromUser);
                     if((gm == null || gm.getType() == GroupMemberType_Removed) && request.getUpdateDt() > 0) {
                         continue;
