@@ -119,6 +119,19 @@ mvn clean package
 
 修改之后运行编译命令```mvn clean package```，rpm包生成在```distribution/target```目录下。
 
+## Epoll
+在linux系统中打开Epoll开关可以提高性能，默认软件包内打包的是x86_64的epoll native sdk。如果是arm64的机器，可以把[broker pom](./broker/pom.xml)文件中修改如下：
+```xml
+<dependency>
+    <groupId>io.netty</groupId>
+    <artifactId>netty-transport-native-epoll</artifactId>
+    <version>${netty.version}</version>
+<!--    <classifier>linux-x86_64</classifier>-->
+    <classifier>linux-aarch_64</classifier>
+</dependency>
+```
+然后重新打包。专业版IM服务软件包中有arm64架构的sdk，可以直接替换。epoll只支持x86_64和arm64两个架构，其他架构不要把epoll开关打开。
+
 ## 升级说明
 1. 从0.42 版本增加了群成员数限制，默认为2000。如果您从之前的版本升级到这个版本或以后，需要注意到群成员数的限制。升级之后超出限制的群不受影响，但不能继续加人，如果您想修改默认值，可以在升级版本之后，修改t_setting表，把默认的大小改为您期望的人数。另外修改t_group表，把已经存在的群组max_member_count改成您期望的，然后重启。
 2. 0.50版本添加了是否允许客户端发送群操作通知的配置。如果您在客户端自定义群通知，需要在服务器端配置允许，没有使用自定义群操作通知的不受影响。***
