@@ -3767,7 +3767,11 @@ public class DatabaseStore {
                 sql += " where `_name` = ?";
             }
 
-            sql += " and _status = 0";
+            sql += " and _status <> 64";
+            sql += " and _status <> 16";
+            sql += " and _status <> 17";
+            sql += " and _status <> 24";
+            sql += " and _status <> 25";
 
             sql += " limit 20";
 
