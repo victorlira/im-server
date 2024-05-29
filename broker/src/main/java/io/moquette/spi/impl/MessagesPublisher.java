@@ -668,7 +668,15 @@ public class MessagesPublisher {
     public void publish2Receivers(WFCMessage.Message message, Set<String> receivers, String exceptClientId, int pullType) {
         if (message.getConversation().getType() == ProtoConstants.ConversationType.ConversationType_Channel) {
             WFCMessage.ChannelInfo channelInfo = m_messagesStore.getChannelInfo(message.getConversation().getTarget());
-            if (channelInfo != null && !StringUtil.isNullOrEmpty(channelInfo.getCallback()) && channelInfo.getAutomatic() == 1 && !message.getFromUser().equals(channelInfo.getOwner())) {
+
+            boolean forwardMsg;
+            if(m_messagesStore.isChannelNewCallbackFeature()) {
+                forwardMsg = channelInfo != null && !StringUtil.isNullOrEmpty(channelInfo.getCallback()) && !StringUtil.isNullOrEmpty(exceptClientId);
+            } else {
+                forwardMsg = channelInfo != null && !StringUtil.isNullOrEmpty(channelInfo.getCallback()) && channelInfo.getAutomatic() == 1 && !message.getFromUser().equals(channelInfo.getOwner());
+            }
+
+            if (forwardMsg) {
                 OutputClient outputClient = null;
                 if(m_messagesStore.isChannelCallbackWithClientInfo() && !StringUtil.isNullOrEmpty(exceptClientId)) {
                     Session session = m_sessionsStore.getSession(exceptClientId);
@@ -767,7 +775,10 @@ public class MessagesPublisher {
     }
 
     public void notifyChannelListenStatusChanged(WFCMessage.ChannelInfo channelInfo, String user, boolean listen) {
-        if (channelInfo == null || StringUtil.isNullOrEmpty(channelInfo.getCallback()) || channelInfo.getAutomatic() == 0) {
+        if (channelInfo == null || StringUtil.isNullOrEmpty(channelInfo.getCallback())) {
+            return;
+        }
+        if(!m_messagesStore.isChannelNewCallbackFeature() && channelInfo.getAutomatic() == 0) {
             return;
         }
 

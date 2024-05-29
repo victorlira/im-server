@@ -203,6 +203,7 @@ public class MemoryMessagesStore implements IMessagesStore {
     private boolean mForwardMessageWithClientInfo = false;
     private boolean mRobotCallbackWithClientInfo = false;
     private boolean mChannelCallbackWithClientInfo = false;
+    private boolean mChannelNewCallbackFeature = true;
 
     private Set<Integer> mUserHideProperties = new HashSet<>();
 
@@ -602,8 +603,12 @@ public class MemoryMessagesStore implements IMessagesStore {
         try {
             mChannelCallbackWithClientInfo = Boolean.parseBoolean(server.getConfig().getProperty(BrokerConstants.CHANNEL_Callback_With_Client_Info, "false"));
         } catch (Exception e) {
-
         }
+        try {
+            mChannelNewCallbackFeature = Boolean.parseBoolean(server.getConfig().getProperty(BrokerConstants.CHANNEL_New_Callback_Feature, "true"));
+        } catch (Exception e) {
+        }
+
         try {
             mRecallForwardUrl = server.getConfig().getProperty(BrokerConstants.MESSAGE_RecallMsg_Forward_Url);
         } catch (Exception e) {
@@ -732,7 +737,7 @@ public class MemoryMessagesStore implements IMessagesStore {
             if (channelInfo != null) {
                 if (channelInfo.getOwner().equals(fromUser)) {
                     if(requestSourceType == ProtoConstants.RequestSourceType.Request_From_Channel
-                        && channelInfo.getAutomatic() != 0) {
+                        && channelInfo.getAutomatic() != 0 && !isChannelNewCallbackFeature()) {
                         LOG.info("Channel api message not send to the owner when automatic");
                     } else {
                         notifyReceivers.add(fromUser);
@@ -762,7 +767,7 @@ public class MemoryMessagesStore implements IMessagesStore {
                     }
                 } else {
                     notifyReceivers.add(fromUser);
-                    if (channelInfo.getAutomatic() == 0) {
+                    if (channelInfo.getAutomatic() == 0 || isChannelNewCallbackFeature()) {
                         notifyReceivers.add(channelInfo.getOwner());
                     } else {
                         LOG.info("Channel api message not send to the owner when automatic");
@@ -4643,6 +4648,11 @@ public class MemoryMessagesStore implements IMessagesStore {
     @Override
     public boolean isChannelCallbackWithClientInfo() {
         return mChannelCallbackWithClientInfo;
+    }
+
+    @Override
+    public boolean isChannelNewCallbackFeature() {
+        return mChannelNewCallbackFeature;
     }
 
     @Override

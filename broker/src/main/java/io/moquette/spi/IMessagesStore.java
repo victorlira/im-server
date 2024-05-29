@@ -243,6 +243,7 @@ public interface IMessagesStore {
     boolean isForwardMessageWithClientInfo();
     boolean isRobotCallbackWithClientInfo();
     boolean isChannelCallbackWithClientInfo();
+    boolean isChannelNewCallbackFeature();
 
     boolean isRobotAutoAcceptFriendRequest();
 

@@ -163,6 +163,8 @@ public final class BrokerConstants {
 
     public static final String ROBOT_Callback_With_Client_Info = "robot.callback_with_client_info";
     public static final String CHANNEL_Callback_With_Client_Info = "channel.callback_with_client_info";
+    public static final String CHANNEL_New_Callback_Feature = "channel.new_callback_feature";
+
 
     public static final String FRIEND_Disable_Search = "friend.disable_search";
     public static final String FRIEND_Disable_NickName_Search = "friend.disable_nick_name_search";
