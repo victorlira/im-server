@@ -80,6 +80,7 @@ public class UpdateProfileAction extends RobotAction {
             RestResult result = RestResult.ok();
             if(modified) {
                 try {
+                    builder.setUpdateDt(System.currentTimeMillis());
                     messagesStore.updateUserInfo(builder.build());
                 } catch (Exception e) {
                     e.printStackTrace();
