@@ -68,6 +68,7 @@ public class Main {
         testGroup();
         testChatroom();
         testMessage();
+        testChannelApi();
         testGeneralApi();
         testSensitiveApi();
         if (commercialServer) {
@@ -881,6 +882,51 @@ public class Main {
     }
 
     //***********************************************
+    //****  测试频道功能
+    //***********************************************
+    static void testChannelApi() throws Exception {
+        String channelName = "MyChannel";
+        String channelOwner = "user1";
+        InputCreateChannel inputCreateChannel = new InputCreateChannel();
+        inputCreateChannel.setName(channelName);
+        inputCreateChannel.setOwner(channelOwner);
+        IMResult<OutputCreateChannel> resultCreateChannel = ChannelAdmin.createChannel(inputCreateChannel);
+        if (resultCreateChannel != null && resultCreateChannel.getErrorCode() == ErrorCode.ERROR_CODE_SUCCESS) {
+            System.out.println("success");
+            inputCreateChannel.setTargetId(resultCreateChannel.result.getTargetId());
+        } else {
+            System.out.println("create channel failure");
+            System.exit(-1);
+        }
+
+        IMResult<OutputGetChannelInfo> resultGetChannel = ChannelAdmin.getChannelInfo(inputCreateChannel.getTargetId());
+        if(resultGetChannel != null && resultGetChannel.getErrorCode() == ErrorCode.ERROR_CODE_SUCCESS
+            && resultGetChannel.getResult().getName().equals(channelName)
+            && resultGetChannel.getResult().getOwner().equals(channelOwner)) {
+            System.out.println("success");
+        } else {
+            System.out.println("get channel failure");
+            System.exit(-1);
+        }
+
+        IMResult<Void> voidIMResult = ChannelAdmin.destroyChannel(inputCreateChannel.getTargetId());
+        if(voidIMResult != null && voidIMResult.getErrorCode() == ErrorCode.ERROR_CODE_SUCCESS) {
+            System.out.println("success");
+        } else {
+            System.out.println("destroy channel failure");
+            System.exit(-1);
+        }
+
+        resultGetChannel = ChannelAdmin.getChannelInfo(inputCreateChannel.getTargetId());
+        if(resultGetChannel != null && resultGetChannel.getErrorCode() == ErrorCode.ERROR_CODE_SUCCESS && (resultGetChannel.getResult().getState() & ProtoConstants.ChannelState.Channel_State_Mask_Deleted) > 0) {
+            System.out.println("success");
+        } else {
+            System.out.println("get channel failure");
+            System.exit(-1);
+        }
+    }
+
+    //***********************************************
     //****  一些其它的功能，比如创建频道，更新用户设置等
     //***********************************************
     static void testGeneralApi() throws Exception {
@@ -905,46 +951,6 @@ public class Main {
             System.out.println("success");
         } else {
             System.out.println("get system setting failure");
-            System.exit(-1);
-        }
-
-        String channelName = "MyChannel";
-        String channelOwner = "user1";
-        InputCreateChannel inputCreateChannel = new InputCreateChannel();
-        inputCreateChannel.setName(channelName);
-        inputCreateChannel.setOwner(channelOwner);
-        IMResult<OutputCreateChannel> resultCreateChannel = GeneralAdmin.createChannel(inputCreateChannel);
-        if (resultCreateChannel != null && resultCreateChannel.getErrorCode() == ErrorCode.ERROR_CODE_SUCCESS) {
-            System.out.println("success");
-            inputCreateChannel.setTargetId(resultCreateChannel.result.getTargetId());
-        } else {
-            System.out.println("create channel failure");
-            System.exit(-1);
-        }
-
-        IMResult<OutputGetChannelInfo> resultGetChannel = GeneralAdmin.getChannelInfo(inputCreateChannel.getTargetId());
-        if(resultGetChannel != null && resultGetChannel.getErrorCode() == ErrorCode.ERROR_CODE_SUCCESS
-            && resultGetChannel.getResult().getName().equals(channelName)
-            && resultGetChannel.getResult().getOwner().equals(channelOwner)) {
-            System.out.println("success");
-        } else {
-            System.out.println("get channel failure");
-            System.exit(-1);
-        }
-
-        IMResult<Void> voidIMResult = GeneralAdmin.destroyChannel(inputCreateChannel.getTargetId());
-        if(voidIMResult != null && voidIMResult.getErrorCode() == ErrorCode.ERROR_CODE_SUCCESS) {
-            System.out.println("success");
-        } else {
-            System.out.println("destroy channel failure");
-            System.exit(-1);
-        }
-
-        resultGetChannel = GeneralAdmin.getChannelInfo(inputCreateChannel.getTargetId());
-        if(resultGetChannel != null && resultGetChannel.getErrorCode() == ErrorCode.ERROR_CODE_SUCCESS && (resultGetChannel.getResult().getState() & ProtoConstants.ChannelState.Channel_State_Mask_Deleted) > 0) {
-            System.out.println("success");
-        } else {
-            System.out.println("get channel failure");
             System.exit(-1);
         }
 
@@ -1506,7 +1512,7 @@ public class Main {
         inputCreateChannel.setAuto(1);
         inputCreateChannel.setCallback("http://192.168.1.81:8088/wf/channelId123");
         inputCreateChannel.setState(Channel_State_Mask_FullInfo | Channel_State_Mask_Unsubscribed_User_Access | Channel_State_Mask_Active_Subscribe | Channel_State_Mask_Message_Unsubscribed);
-        IMResult<OutputCreateChannel> resultCreateChannel = GeneralAdmin.createChannel(inputCreateChannel);
+        IMResult<OutputCreateChannel> resultCreateChannel = ChannelAdmin.createChannel(inputCreateChannel);
         if (resultCreateChannel != null && resultCreateChannel.getErrorCode() == ErrorCode.ERROR_CODE_SUCCESS) {
             System.out.println("create channel success");
         } else {
@@ -1536,7 +1542,7 @@ public class Main {
             System.exit(-1);
         }
 
-        resultVoid = GeneralAdmin.subscribeChannel(channelId, "userId4");
+        resultVoid = ChannelAdmin.subscribeChannel(channelId, "userId4");
         if (resultVoid != null && resultVoid.getErrorCode() == ErrorCode.ERROR_CODE_SUCCESS) {
             System.out.println("subscribe done");
         } else {

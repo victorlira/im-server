@@ -22,35 +22,59 @@ public class GeneralAdmin {
         return AdminHttpUtils.httpJsonPost(path, input, Void.class);
     }
 
+    /**
+     * @deprecated 请使用 {@link cn.wildfirechat.sdk.ChannelAdmin#createChannel(InputCreateChannel inputCreateChannel)} 代替此方法，因为它将在未来的版本中被移除。
+     */
+    @Deprecated
     public static IMResult<OutputCreateChannel> createChannel(InputCreateChannel inputCreateChannel) throws Exception {
         String path = APIPath.Create_Channel;
         return AdminHttpUtils.httpJsonPost(path, inputCreateChannel, OutputCreateChannel.class);
     }
 
+    /**
+     * @deprecated 请使用 {@link cn.wildfirechat.sdk.ChannelAdmin#destroyChannel(String channelId)} 代替此方法，因为它将在未来的版本中被移除。
+     */
+    @Deprecated
     public static IMResult<Void> destroyChannel(String channelId) throws Exception {
         String path = APIPath.Destroy_Channel;
         InputChannelId inputChannelId = new InputChannelId(channelId);
         return AdminHttpUtils.httpJsonPost(path, inputChannelId, Void.class);
     }
 
+    /**
+     * @deprecated 请使用 {@link cn.wildfirechat.sdk.ChannelAdmin#getChannelInfo(String channelId)} 代替此方法，因为它将在未来的版本中被移除。
+     */
+    @Deprecated
     public static IMResult<OutputGetChannelInfo> getChannelInfo(String channelId) throws Exception {
         String path = APIPath.Get_Channel_Info;
         InputChannelId inputChannelId = new InputChannelId(channelId);
         return AdminHttpUtils.httpJsonPost(path, inputChannelId, OutputGetChannelInfo.class);
     }
 
+    /**
+     * @deprecated 请使用 {@link cn.wildfirechat.sdk.ChannelAdmin#subscribeChannel(String userId, String channelId)} 代替此方法，因为它将在未来的版本中被移除。
+     */
+    @Deprecated
     public static IMResult<Void> subscribeChannel(String channelId, String userId) throws Exception {
         String path = APIPath.Subscribe_Channel;
         InputSubscribeChannel input = new InputSubscribeChannel(channelId, userId, 1);
         return AdminHttpUtils.httpJsonPost(path, input, Void.class);
     }
 
+    /**
+     * @deprecated 请使用 {@link cn.wildfirechat.sdk.ChannelAdmin#unsubscribeChannel(String userId, String channelId)} 代替此方法，因为它将在未来的版本中被移除。
+     */
+    @Deprecated
     public static IMResult<Void> unsubscribeChannel(String channelId, String userId) throws Exception {
         String path = APIPath.Subscribe_Channel;
         InputSubscribeChannel input = new InputSubscribeChannel(channelId, userId, 0);
         return AdminHttpUtils.httpJsonPost(path, input, Void.class);
     }
 
+    /**
+     * @deprecated 请使用 {@link cn.wildfirechat.sdk.ChannelAdmin#isUserSubscribedChannel(String userId, String channelId)} 代替此方法，因为它将在未来的版本中被移除。
+     */
+    @Deprecated
     public static IMResult<OutputBooleanValue> isUserSubscribedChannel(String userId, String channelId) throws Exception {
         String path = APIPath.Check_User_Subscribe_Channel;
         InputSubscribeChannel input = new InputSubscribeChannel(channelId, userId, 0);
