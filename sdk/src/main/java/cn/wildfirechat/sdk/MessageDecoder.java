@@ -79,6 +79,36 @@ public class MessageDecoder {
 
     }
 
+    private void registerAllMessageContent() {
+        try {
+            for (Class cls : ClassUtil.getAllAssignedClass(MessageContent.class)) {
+                ContentTag annotation = (ContentTag) cls.getAnnotation(ContentTag.class);
+                if (annotation != null) {
+                    contentMapper.put(annotation.type(), cls);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private MessageContent contentOfType(int type) {
+        Class<? extends MessageContent> cls = contentMapper.get(type);
+        if (cls != null) {
+            try {
+                return cls.newInstance();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return new UnknownMessageContent();
+    }
+
+    private Map<Integer, Class<? extends MessageContent>> contentMapper = new HashMap<>();
+
+
     /*
     * 从数据库读取消息参考示例
     WFCMessage.Message getMessage(long messageId) {
@@ -117,35 +147,15 @@ public class MessageDecoder {
         }
         return null;
     }
+
+    // encrypted 参数要 wildfirechat.conf 中的 message.encrypt_message_content 对应
+    byte[] encryptMessageContent(byte[] in, boolean encrypted) {
+        if (in != null || encrypted) {
+            for (int i = 0; i < in.length; i++) {
+                in[i] ^= 0xBD;
+            }
+        }
+        return in;
+    }
      */
-
-    private void registerAllMessageContent() {
-        try {
-            for (Class cls : ClassUtil.getAllAssignedClass(MessageContent.class)) {
-                ContentTag annotation = (ContentTag) cls.getAnnotation(ContentTag.class);
-                if (annotation != null) {
-                    contentMapper.put(annotation.type(), cls);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private MessageContent contentOfType(int type) {
-        Class<? extends MessageContent> cls = contentMapper.get(type);
-        if (cls != null) {
-            try {
-                return cls.newInstance();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return new UnknownMessageContent();
-    }
-
-    private Map<Integer, Class<? extends MessageContent>> contentMapper = new HashMap<>();
-
 }
