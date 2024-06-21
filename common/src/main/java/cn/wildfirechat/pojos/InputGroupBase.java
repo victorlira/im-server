@@ -15,6 +15,7 @@ public class InputGroupBase {
     public String operator;
     public List<Integer> to_lines;
     public MessagePayload  notify_message;
+    private boolean isMeshMessage;
 
     public String getOperator() {
         return operator;
@@ -38,5 +39,13 @@ public class InputGroupBase {
 
     public void setNotify_message(MessagePayload notify_message) {
         this.notify_message = notify_message;
+    }
+
+    public boolean isMeshMessage() {
+        return isMeshMessage;
+    }
+
+    public void setMeshMessage(boolean meshMessage) {
+        isMeshMessage = meshMessage;
     }
 }

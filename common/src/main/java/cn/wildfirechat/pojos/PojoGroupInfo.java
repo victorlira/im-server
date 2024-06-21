@@ -14,6 +14,7 @@ public class PojoGroupInfo {
     String portrait;
     String owner;
     int type;
+    int member_count;
     String extra;
     int mute;
     int join_type;
@@ -23,6 +24,8 @@ public class PojoGroupInfo {
     int history_message;
     boolean super_group;
     boolean deleted;
+    long update_dt;
+    long member_update_dt;
 
     public String getTarget_id() {
         return target_id;
@@ -134,5 +137,29 @@ public class PojoGroupInfo {
 
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
+    }
+
+    public long getUpdate_dt() {
+        return update_dt;
+    }
+
+    public void setUpdate_dt(long update_dt) {
+        this.update_dt = update_dt;
+    }
+
+    public int getMember_count() {
+        return member_count;
+    }
+
+    public void setMember_count(int member_count) {
+        this.member_count = member_count;
+    }
+
+    public long getMember_update_dt() {
+        return member_update_dt;
+    }
+
+    public void setMember_update_dt(long member_update_dt) {
+        this.member_update_dt = member_update_dt;
     }
 }

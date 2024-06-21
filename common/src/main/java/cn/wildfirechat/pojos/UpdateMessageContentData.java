@@ -14,6 +14,7 @@ public class UpdateMessageContentData {
     private MessagePayload payload;
     private int distribute;
     private int updateTimestamp;
+    private int meshLocal;
 
     public String getOperator() {
         return operator;
@@ -53,5 +54,13 @@ public class UpdateMessageContentData {
 
     public void setUpdateTimestamp(int updateTimestamp) {
         this.updateTimestamp = updateTimestamp;
+    }
+
+    public int getMeshLocal() {
+        return meshLocal;
+    }
+
+    public void setMeshLocal(int meshLocal) {
+        this.meshLocal = meshLocal;
     }
 }

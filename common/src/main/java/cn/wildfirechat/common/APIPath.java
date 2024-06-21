@@ -17,9 +17,15 @@ public interface APIPath {
     String Sensitive_Del = "/admin/sensitive/del";
     String Sensitive_Query = "/admin/sensitive/query";
 
+    String Create_Domain = "/admin/domain/create";
+    String Get_Domain = "/admin/domain/get";
+    String Destroy_Domain = "/admin/domain/destroy";
+    String List_Domain = "/admin/domain/list";
+
     String Create_User = "/admin/user/create";
     String Update_User = "/admin/user/update";
     String Destroy_User = "/admin/user/destroy";
+    String Search_User = "/admin/user/search_user";
     String Create_Robot = "/admin/robot/create";
     String CreateOrUpdate_Device = "/admin/device/create";
     String Get_Device = "/admin/device/get";
@@ -27,6 +33,7 @@ public interface APIPath {
     String User_Get_Token = "/admin/user/get_token";
     String User_Update_Block_Status = "/admin/user/update_block_status";
     String User_Get_Info = "/admin/user/get_info";
+    String User_Batch_Get_Infos = "/admin/user/batch_get_infos";
     String User_Get_Email_Info = "/admin/user/get_info_by_email";
     String User_Get_All = "/admin/user/all";
     String User_Get_Robot_Info = "/admin/user/get_robot_info";
@@ -52,7 +59,10 @@ public interface APIPath {
     String Friend_Get_Requests = "/admin/friend/get_requests";
     String Relation_Get = "/admin/relation/get";
 
+    String Handle_Friend_Send_Request = "/admin/friend/handle_send_request";
+
     String Msg_Send = "/admin/message/send";
+    String Msg_Publish = "/admin/message/publish";
     String Msg_Recall = "/admin/message/recall";
     String Msg_Delete = "/admin/message/delete";
     String Msg_Update = "/admin/message/update";
@@ -70,6 +80,7 @@ public interface APIPath {
     String Group_Dismiss = "/admin/group/del";
     String Group_Transfer = "/admin/group/transfer";
     String Group_Get_Info = "/admin/group/get_info";
+    String Group_Batch_Info = "/admin/group/batch_infos";
     String Group_Modify_Info = "/admin/group/modify";
     String Group_Member_List = "/admin/group/member/list";
     String Group_Member_Get = "/admin/group/member/get";
@@ -84,6 +95,10 @@ public interface APIPath {
     String Group_Set_Member_Alias = "/admin/group/member/set_alias";
     String Group_Set_Member_Extra = "/admin/group/member/set_extra";
     String Get_Common_Groups = "/admin/group/common_group";
+
+    String Sync_Group = "/admin/mesh/group_sync";
+    String Conference_User_Request = "/admin/conference/user_request";
+    String Conference_User_Event = "/admin/conference/user_event";
 
     String Create_Channel = "/admin/channel/create";
     String Destroy_Channel = "/admin/channel/destroy";

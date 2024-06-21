@@ -31,6 +31,11 @@ public class GroupAdmin {
         return AdminHttpUtils.httpJsonPost(path, input, PojoGroupInfo.class);
     }
 
+    public static IMResult<PojoGroupInfoList> batchGroupInfos(List<String> groupIds) throws Exception {
+        String path = APIPath.Group_Batch_Info;
+        return AdminHttpUtils.httpJsonPost(path, groupIds, PojoGroupInfoList.class);
+    }
+
     public static IMResult<Void> dismissGroup(String operator, String groupId, List<Integer> to_lines, MessagePayload  notify_message) throws Exception {
         String path = APIPath.Group_Dismiss;
         InputDismissGroup dismissGroup = new InputDismissGroup();

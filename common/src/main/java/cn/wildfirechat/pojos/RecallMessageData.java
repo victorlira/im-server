@@ -14,6 +14,7 @@ import io.netty.util.internal.StringUtil;
 public class RecallMessageData {
     private String operator;
     private long messageUid;
+    private boolean isUserRecall;
 
     public String getOperator() {
         return operator;
@@ -29,5 +30,13 @@ public class RecallMessageData {
 
     public void setMessageUid(long messageUid) {
         this.messageUid = messageUid;
+    }
+
+    public boolean isUserRecall() {
+        return isUserRecall;
+    }
+
+    public void setUserRecall(boolean userRecall) {
+        isUserRecall = userRecall;
     }
 }
