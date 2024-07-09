@@ -2858,7 +2858,9 @@ public class MemoryMessagesStore implements IMessagesStore {
         IMap<String, Integer> mUserMap = hzInstance.getMap(USER_STATUS);
         ArrayList<InputOutputUserBlockStatus> out = new ArrayList<>();
         for (Map.Entry<String, Integer> entry : mUserMap.entrySet()) {
-            out.add(new InputOutputUserBlockStatus(entry.getKey(), entry.getValue()));
+            if(entry.getValue() > 0) {
+                out.add(new InputOutputUserBlockStatus(entry.getKey(), entry.getValue()));
+            }
         }
         return out;
     }
