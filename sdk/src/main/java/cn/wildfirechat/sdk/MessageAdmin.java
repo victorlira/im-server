@@ -1,6 +1,7 @@
 package cn.wildfirechat.sdk;
 
 import cn.wildfirechat.common.APIPath;
+import cn.wildfirechat.message.MessageContent;
 import cn.wildfirechat.pojos.*;
 import cn.wildfirechat.sdk.model.IMResult;
 import cn.wildfirechat.sdk.utilities.AdminHttpUtils;
@@ -11,6 +12,13 @@ public class MessageAdmin {
     public static IMResult<SendMessageResult> sendMessage(String sender, Conversation conversation, MessagePayload payload) throws Exception {
         return sendMessage(sender, conversation, payload, null);
     }
+
+    //toUsers为发送给会话中部分用户用的，正常为null，仅当需要指定群/频道/聊天室中部分接收用户时使用
+    public static IMResult<SendMessageResult> sendMessage(String sender, Conversation conversation, MessageContent content, List<String> toUsers) throws Exception {
+        cn.wildfirechat.message.core.MessagePayload payload = content.encode();
+        return sendMessage(sender, conversation, payload.toPojoMessagePayload(), toUsers);
+    }
+
     //toUsers为发送给会话中部分用户用的，正常为null，仅当需要指定群/频道/聊天室中部分接收用户时使用
     public static IMResult<SendMessageResult> sendMessage(String sender, Conversation conversation, MessagePayload payload, List<String> toUsers) throws Exception {
         String path = APIPath.Msg_Send;
