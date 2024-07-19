@@ -2203,6 +2203,7 @@ public class DatabaseStore {
                 ", `_join_type`" +
                 ", `_private_chat`" +
                 ", `_searchable`" +
+                ", _deleted" +
                 " from t_group  where `_gid` = ?";
 
             statement = connection.prepareStatement(sql);
@@ -2258,6 +2259,9 @@ public class DatabaseStore {
 
                 intValue = rs.getInt(index++);
                 builder.setSearchable(intValue);
+
+                intValue = rs.getInt(index++);
+                builder.setDeleted(intValue);
 
                 return builder.build();
             }
