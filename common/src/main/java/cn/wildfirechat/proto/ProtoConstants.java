@@ -97,6 +97,10 @@ public class ProtoConstants {
         int Composited = 11;
         int Rich_Notification = 12;
         int Articles = 13;
+        int StreamingText_Generationg = 14;
+        int StreamingText_Generated = 15;
+        int Not_Delivered = 16;
+        int Ptt_Voice = 23;
         int Enter_Channel_Chat = 71;
         int Leave_Channel_Chat = 72;
         int Recall = 80;
@@ -126,6 +130,12 @@ public class ProtoConstants {
         int Quit_Group_Visible_Notification = 121;
         int Modify_Group_Extra = 122;
         int Modify_Group_Member_Extra = 123;
+
+        int Call_Start = 400;
+        int Call_Accept = 401;
+        int Call_End = 402;
+        int Call_Add_Participant = 406;
+        int Call_Multi_Call_Ongoing = 416;
     }
 
     public interface MessagePersistFlag {

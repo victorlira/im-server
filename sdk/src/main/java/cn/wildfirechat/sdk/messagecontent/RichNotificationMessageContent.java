@@ -1,4 +1,4 @@
-package cn.wildfirechat.messagecontentbuilder;
+package cn.wildfirechat.sdk.messagecontent;
 
 import cn.wildfirechat.pojos.MessagePayload;
 import cn.wildfirechat.proto.ProtoConstants;
@@ -9,7 +9,7 @@ import org.json.simple.JSONObject;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-public class RichNotificationContentBuilder extends MessageContentBuilder{
+public class RichNotificationMessageContent extends MessageContent {
     private String title;
     private String desc;
     private String remark;
@@ -19,34 +19,51 @@ public class RichNotificationContentBuilder extends MessageContentBuilder{
     private String exUrl;
     private String appId;
 
-    public static RichNotificationContentBuilder newBuilder(String title, String desc, String exUrl) {
-        RichNotificationContentBuilder builder = new RichNotificationContentBuilder();
-        builder.title = title;
-        builder.desc = desc;
-        builder.exUrl = exUrl;
-        return builder;
+    //必须有个空的构造函数
+    public RichNotificationMessageContent() {
     }
 
-    public RichNotificationContentBuilder remark(String remark) {
+    public RichNotificationMessageContent(String title, String desc, String exUrl) {
+        this.title = title;
+        this.desc = desc;
+        this.exUrl = exUrl;
+    }
+
+    public RichNotificationMessageContent title(String title) {
+        this.title = title;
+        return this;
+    }
+
+    public RichNotificationMessageContent desc(String desc) {
+        this.desc = desc;
+        return this;
+    }
+
+    public RichNotificationMessageContent exUrl(String exUrl) {
+        this.exUrl = exUrl;
+        return this;
+    }
+
+    public RichNotificationMessageContent remark(String remark) {
         this.remark = remark;
         return this;
     }
-    public RichNotificationContentBuilder exName(String exName) {
+    public RichNotificationMessageContent exName(String exName) {
         this.exName = exName;
         return this;
     }
-    public RichNotificationContentBuilder exPortrait(String exPortrait) {
+    public RichNotificationMessageContent exPortrait(String exPortrait) {
         this.exPortrait = exPortrait;
         return this;
     }
-    public RichNotificationContentBuilder appId(String appId) {
+    public RichNotificationMessageContent appId(String appId) {
         this.appId = appId;
         return this;
     }
-    public RichNotificationContentBuilder addItem(String key, String value) {
+    public RichNotificationMessageContent addItem(String key, String value) {
         return addItem(key, value, null);
     }
-    public RichNotificationContentBuilder addItem(String key, String value, String color) {
+    public RichNotificationMessageContent addItem(String key, String value, String color) {
         if(this.datas == null) {
             this.datas = new JSONArray();
         }
@@ -61,10 +78,18 @@ public class RichNotificationContentBuilder extends MessageContentBuilder{
     }
 
     @Override
-    public MessagePayload build() {
+    public int getContentType() {
+        return ProtoConstants.ContentType.Rich_Notification;
+    }
+
+    @Override
+    public int getPersistFlag() {
+        return ProtoConstants.PersistFlag.Persist_And_Count;
+    }
+
+    @Override
+    public MessagePayload encode() {
         MessagePayload payload = encodeBase();
-        payload.setType(ProtoConstants.ContentType.Rich_Notification);
-        payload.setPersistFlag(ProtoConstants.PersistFlag.Persist_And_Count);
         payload.setPushContent(title);
         payload.setContent(desc);
         JSONObject jsonObject = new JSONObject();
@@ -84,5 +109,9 @@ public class RichNotificationContentBuilder extends MessageContentBuilder{
         payload.setBase64edData(Base64.getEncoder().encodeToString(jsonObject.toJSONString().getBytes(StandardCharsets.UTF_8)));
 
         return payload;
+    }
+
+    @Override
+    public void decode(MessagePayload payload) {
     }
 }
