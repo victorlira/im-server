@@ -2421,7 +2421,8 @@ public class MemoryMessagesStore implements IMessagesStore {
 
                 WFCMessage.GroupInfo groupInfo = groupMap.get(message.getConversation().getTarget());
                 if (groupInfo == null) {
-                    return ErrorCode.ERROR_CODE_RECALL_TIME_EXPIRED;
+                    LOG.info("recall message failure, group {} not exist", message.getConversation().getTarget());
+                    return ErrorCode.ERROR_CODE_NOT_EXIST;
                 }
                 if (operatorId.equals(groupInfo.getOwner())) {
                     if(operatorId.equals(message.getFromUser())) {
