@@ -102,7 +102,7 @@ public class HttpUtils {
                     if(httpCallback != null) {
                         int code = response.code();
                         if(code == 200) {
-                            if(response.body() != null && response.body().contentLength() > 0) {
+                            if(response.body() != null) {
                                 httpCallback.onSuccess(response.body().string());
                             } else {
                                 httpCallback.onSuccess(null);
