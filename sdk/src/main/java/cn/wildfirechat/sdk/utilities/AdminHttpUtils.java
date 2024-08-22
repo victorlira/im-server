@@ -1,5 +1,6 @@
 package cn.wildfirechat.sdk.utilities;
 
+import cn.wildfirechat.common.ErrorCode;
 import cn.wildfirechat.sdk.model.IMResult;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -157,7 +158,15 @@ public class AdminHttpUtils extends JsonUtils {
                 LOG.info("Request error: " + statusCode + " error msg:" + content);
                 throw new Exception("Http request error with code:" + statusCode);
             } else {
-                return fromJsonObject(content, clazz);
+                IMResult<T> result = fromJsonObject(content, clazz);
+                if(result != null){
+                    if(result.getErrorCode() == ErrorCode.ERROR_CODE_AUTH_FAILURE) {
+                        LOG.error("鉴权失败，IM服务地址或者密钥配置错误，请检查IM服务{}的配置文件中的http.admin.secret_key是否是{}", adminUrl, adminSecret);
+                    } else if(result.getErrorCode() == ErrorCode.ERROR_CODE_SIGN_EXPIRED) {
+                        LOG.error("时间验证失败，请确保当前服务和IM服务{}的时间是一致的", adminUrl);
+                    }
+                }
+                return result;
             }
         } catch (Exception e) {
             e.printStackTrace();
