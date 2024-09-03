@@ -52,6 +52,7 @@ public class GetGroupInfoAction extends RobotAction {
                     pojoGroupInfo.setPortrait(groupInfo.getPortrait());
                     pojoGroupInfo.setTarget_id(groupInfo.getTargetId());
                     pojoGroupInfo.setType(groupInfo.getType());
+                    pojoGroupInfo.setMember_count(groupInfo.getMemberCount());
                     pojoGroupInfo.setMute(groupInfo.getMute());
                     pojoGroupInfo.setJoin_type(groupInfo.getJoinType());
                     pojoGroupInfo.setPrivate_chat(groupInfo.getPrivateChat());
@@ -60,6 +61,8 @@ public class GetGroupInfoAction extends RobotAction {
                     pojoGroupInfo.setHistory_message(groupInfo.getHistoryMessage());
                     pojoGroupInfo.setSuper_group(groupInfo.getSuperGroup()>0);
                     pojoGroupInfo.setDeleted(groupInfo.getDeleted()>0);
+                    pojoGroupInfo.setUpdate_dt(groupInfo.getUpdateDt());
+                    pojoGroupInfo.setMember_update_dt(groupInfo.getMemberUpdateDt());
                     result = RestResult.ok(pojoGroupInfo);
                 }
                 setResponseContent(result, response);
