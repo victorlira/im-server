@@ -166,6 +166,8 @@ public class MemoryMessagesStore implements IMessagesStore {
     private Set<String> mAllowStrangerChatSet = new HashSet<>();
     private boolean mDisableStrangerAddGroup = false;
 
+    private boolean mIDUseUUID = true;
+
     private Set<String> mClientSignatureSet = new HashSet<>();
     private boolean mRejectEmptySignature = true;
 
@@ -613,6 +615,11 @@ public class MemoryMessagesStore implements IMessagesStore {
             mRecallForwardUrl = server.getConfig().getProperty(BrokerConstants.MESSAGE_RecallMsg_Forward_Url);
         } catch (Exception e) {
 
+        }
+
+        try {
+            mIDUseUUID = Boolean.parseBoolean(server.getConfig().getProperty(BrokerConstants.ID_USE_UUID, "false"));
+        } catch (Exception e) {
         }
     }
 
@@ -4791,9 +4798,11 @@ public class MemoryMessagesStore implements IMessagesStore {
 
     @Override
     public String getShortUUID(){
-        int id = databaseStore.getGeneratedId();
-        if (id > 0) {
-            return IDUtils.toUid(id);
+        if(!mIDUseUUID) {
+            int id = databaseStore.getGeneratedId();
+            if (id > 0) {
+                return IDUtils.toUid(id);
+            }
         }
         return UUIDGenerator.getUUID();
     }
