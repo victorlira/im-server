@@ -34,6 +34,7 @@ public class PushMessage {
     public String voipDeviceToken;
     public boolean isHiddenDetail;
     public String language;
+    public boolean republish;
     public long messageId;
 
     public PushMessage(String sender, int conversationType, String target, int line, int messageContentType, long serverTime, String senderName, String senderPortrait, String targetName, String targetPortrait, int unReceivedMsg, int mentionedType, boolean isHiddenDetail, String language) {
@@ -65,6 +66,7 @@ public class PushMessage {
         this.mentionedType = mentionedType;
         this.isHiddenDetail = isHiddenDetail;
         this.language = language;
+        this.republish = messageContentType == 80 || messageContentType == 81;
     }
     public PushMessage(String sender, String target, long serverTime, String senderName, int unReceivedMsg, String language, int pushMessageType) {
         this.sender = sender;
