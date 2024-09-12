@@ -155,6 +155,7 @@ public class MemoryMessagesStore implements IMessagesStore {
     private long mFriendRequestDuration = 7 * 24 * 60 * 60 * 1000;
     private long mFriendRejectDuration = 30 * 24 * 60 * 60 * 1000;
     private long mFriendRequestExpiration = 7 * 24 * 60 * 60 * 1000;
+    private RateLimiter mFriendRateLimiter;
     private boolean mFriendRobotAutoAccept = true;
 
     private long mPushExpiredTimes = 604800000L;
@@ -344,6 +345,13 @@ public class MemoryMessagesStore implements IMessagesStore {
             printMissConfigLog(FRIEND_Request_Expiration_Duration, mFriendRequestExpiration + "");
         }
 
+        try {
+            int friendRequestRateLimit = Integer.parseInt(m_Server.getConfig().getProperty(FRIEND_Request_Rate_Limit, "0"));
+            if(friendRequestRateLimit > 0) {
+                mFriendRateLimiter = new RateLimiter(86400, friendRequestRateLimit);
+            }
+        } catch (Exception e) {
+        }
 
         try {
             mFriendRobotAutoAccept = Boolean.parseBoolean(m_Server.getConfig().getProperty(BrokerConstants.FRIEND_Request_Robot_Auto_Accept, "true"));
@@ -3353,9 +3361,16 @@ public class MemoryMessagesStore implements IMessagesStore {
     }
 
     @Override
-    public ErrorCode saveAddFriendRequest(String userId, WFCMessage.AddFriendRequest request, long[] head, boolean isAdmin) {
+    public ErrorCode saveAddFriendRequest(String userId, WFCMessage.AddFriendRequest request, long[] head, boolean isAdmin, boolean isRobot) {
         if (!isAdmin && mDisableFriendRequest) {
             return ErrorCode.ERROR_CODE_NOT_RIGHT;
+        }
+
+        if(!isRobot && !isAdmin && mFriendRateLimiter != null) {
+            if(!mFriendRateLimiter.isGranted(userId)) {
+                LOG.error("User {} request add friend over frequency", userId);
+                return ErrorCode.ERROR_CODE_OVER_FREQUENCY;
+            }
         }
 
         HazelcastInstance hzInstance = m_Server.getHazelcastInstance();

@@ -24,7 +24,8 @@ public class AddFriendHandler extends GroupHandler<WFCMessage.AddFriendRequest> 
     public ErrorCode action(ByteBuf ackPayload, String clientID, String fromUser, ProtoConstants.RequestSourceType requestSourceType, WFCMessage.AddFriendRequest request, Qos1PublishHandler.IMCallback callback) {
             long[] head = new long[1];
             boolean isAdmin = requestSourceType == ProtoConstants.RequestSourceType.Request_From_Admin;
-            ErrorCode errorCode = m_messagesStore.saveAddFriendRequest(fromUser, request, head, isAdmin);
+            boolean isRobot = requestSourceType == ProtoConstants.RequestSourceType.Request_From_Robot;
+            ErrorCode errorCode = m_messagesStore.saveAddFriendRequest(fromUser, request, head, isAdmin, isRobot);
             if (errorCode == ERROR_CODE_SUCCESS) {
                 WFCMessage.User user = m_messagesStore.getUserInfo(request.getTargetUid());
                 if (user != null && user.getType() == ProtoConstants.UserType.UserType_Normal) {
