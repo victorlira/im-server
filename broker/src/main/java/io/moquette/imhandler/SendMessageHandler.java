@@ -37,6 +37,7 @@ public class SendMessageHandler extends IMHandler<WFCMessage.Message> {
     private Set<Integer> mForwardExcludeMessageTypes = new HashSet<>();
     private String mMentionForwardUrl = null;
     private int mBlacklistStrategy = 0; //黑名单中时，0失败，1吞掉。
+    private boolean mBlacklistAllowSend2Black = true;
     private boolean mNoForwardAdminMessage = false;
 
     private String mRemoteSensitiveServerUrl = null;
@@ -69,6 +70,12 @@ public class SendMessageHandler extends IMHandler<WFCMessage.Message> {
             e.printStackTrace();
             Utility.printExecption(LOG, e);
         }
+
+        try {
+            mBlacklistAllowSend2Black = Boolean.parseBoolean(mServer.getConfig().getProperty(BrokerConstants.MESSAGE_Blacklist_Allow_Send, "true"));
+        } catch (Exception e) {
+        }
+
         try {
             mRemoteSensitiveServerUrl = mServer.getConfig().getProperty(BrokerConstants.SENSITIVE_Remote_Server_URL);
             if(!StringUtil.isNullOrEmpty(mRemoteSensitiveServerUrl)) {
@@ -151,6 +158,13 @@ public class SendMessageHandler extends IMHandler<WFCMessage.Message> {
                                 ignoreMsg = true;
                                 errorCode = ErrorCode.ERROR_CODE_SUCCESS;
                             } else {
+                                return errorCode;
+                            }
+                        }
+
+                        if(!mBlacklistAllowSend2Black) {
+                            errorCode = m_messagesStore.isBlacked(fromUser, message.getConversation().getTarget());
+                            if (errorCode != ErrorCode.ERROR_CODE_SUCCESS) {
                                 return errorCode;
                             }
                         }

@@ -153,6 +153,7 @@ public final class BrokerConstants {
     public static final String MESSAGE_Allow_Stranger_Chat_List = "message.allow_stranger_chat_list";
 
     public static final String MESSAGE_Blacklist_Strategy = "message.blacklist.strategy";
+    public static final String MESSAGE_Blacklist_Allow_Send = "message.blacklist.allow_send_to_black";
 
     public static final String MESSAGE_NO_Forward_Admin_Message = "message.no_forward_admin_message";
 

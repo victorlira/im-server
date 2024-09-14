@@ -3244,6 +3244,30 @@ public class MemoryMessagesStore implements IMessagesStore {
         return ErrorCode.ERROR_CODE_SUCCESS;
     }
 
+    @Override
+    public ErrorCode isBlacked(String fromUser, String userId) {
+        HazelcastInstance hzInstance = m_Server.getHazelcastInstance();
+        MultiMap<String, FriendData> friendsMap = hzInstance.getMultiMap(USER_FRIENDS);
+
+        Collection<FriendData> friendDatas = friendsMap.get(fromUser);
+
+        if (friendDatas == null || friendDatas.size() == 0) {
+            friendDatas = loadFriend(friendsMap, fromUser);
+        }
+
+        for (FriendData friendData : friendDatas) {
+            if (friendData.getFriendUid().equals(userId)) {
+                if (friendData.getBlacked() == 1) {
+                    return ErrorCode.ERROR_CODE_IN_BLACK_LIST;
+                } else {
+                    break;
+                }
+            }
+        }
+
+        return ErrorCode.ERROR_CODE_SUCCESS;
+    }
+
     synchronized Collection<FriendData> loadFriend(MultiMap<String, FriendData> friendsMap, String userId) {
         Collection<FriendData> friends = databaseStore.getPersistFriends(userId);
         if (friends != null) {
