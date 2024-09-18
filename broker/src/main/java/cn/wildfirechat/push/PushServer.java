@@ -60,9 +60,6 @@ public class PushServer {
         this.androidPushServerUrl = config.getProperty(PUSH_ANDROID_SERVER_ADDRESS);
         this.iOSPushServerUrl = config.getProperty(PUSH_IOS_SERVER_ADDRESS);
         this.harmonyPushServerUrl = config.getProperty(PUSH_HARMONY_SERVER_ADDRESS);
-        if(StringUtil.isNullOrEmpty(harmonyPushServerUrl)) {
-            harmonyPushServerUrl = androidPushServerUrl;
-        }
     }
 
     public void pushMessage(PushMessage pushMessage, String deviceId, String pushContent) {
