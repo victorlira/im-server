@@ -24,8 +24,7 @@ import win.liyufan.im.Utility;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static io.moquette.BrokerConstants.PUSH_ANDROID_SERVER_ADDRESS;
-import static io.moquette.BrokerConstants.PUSH_IOS_SERVER_ADDRESS;
+import static io.moquette.BrokerConstants.*;
 import static win.liyufan.im.HttpUtils.HttpPostType.POST_TYPE_Push;
 
 public class PushServer {
@@ -47,6 +46,7 @@ public class PushServer {
 
     private String androidPushServerUrl;
     private String iOSPushServerUrl;
+    private String harmonyPushServerUrl;
 
     private PushServer() {
     }
@@ -59,6 +59,10 @@ public class PushServer {
         this.sessionsStore = sessionsStore;
         this.androidPushServerUrl = config.getProperty(PUSH_ANDROID_SERVER_ADDRESS);
         this.iOSPushServerUrl = config.getProperty(PUSH_IOS_SERVER_ADDRESS);
+        this.harmonyPushServerUrl = config.getProperty(PUSH_HARMONY_SERVER_ADDRESS);
+        if(StringUtil.isNullOrEmpty(harmonyPushServerUrl)) {
+            harmonyPushServerUrl = androidPushServerUrl;
+        }
     }
 
     public void pushMessage(PushMessage pushMessage, String deviceId, String pushContent) {
@@ -106,6 +110,8 @@ public class PushServer {
             if (session.getPlatform() == ProtoConstants.Platform.Platform_iOS || session.getPlatform() == ProtoConstants.Platform.Platform_iPad) {
                 url = iOSPushServerUrl;
                 pushMessage.voipDeviceToken = session.getVoipDeviceToken();
+            } else if (session.getPlatform() == ProtoConstants.Platform.Platform_Harmony || session.getPlatform() == ProtoConstants.Platform.Platform_HarmonyPad) {
+                url = harmonyPushServerUrl;
             }
             HttpUtils.httpJsonPost(url, gson.toJson(pushMessage, pushMessage.getClass()), POST_TYPE_Push);
         } else {

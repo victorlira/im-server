@@ -90,6 +90,7 @@ public final class BrokerConstants {
 
     public static final String PUSH_ANDROID_SERVER_ADDRESS = "push.android.server.address";
     public static final String PUSH_IOS_SERVER_ADDRESS = "push.ios.server.address";
+    public static final String PUSH_HARMONY_SERVER_ADDRESS = "push.harmony.server.address";
 
     public static final String MONITOR_Exception_Event_Address = "monitor.exception_event_address";
 
