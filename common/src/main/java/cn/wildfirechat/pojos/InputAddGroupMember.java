@@ -17,6 +17,7 @@ import java.util.List;
 public class InputAddGroupMember extends InputGroupBase {
     private String group_id;
     private List<PojoGroupMember> members;
+    private String member_extra;
 
     public String getGroup_id() {
         return group_id;
@@ -34,6 +35,14 @@ public class InputAddGroupMember extends InputGroupBase {
         this.members = members;
     }
 
+    public String getMember_extra() {
+        return member_extra;
+    }
+
+    public void setMemberExtra(String extra) {
+        this.member_extra = extra;
+    }
+
     public boolean isValide() {
         return true;
     }
@@ -41,6 +50,9 @@ public class InputAddGroupMember extends InputGroupBase {
     public WFCMessage.AddGroupMemberRequest toProtoGroupRequest() {
         WFCMessage.AddGroupMemberRequest.Builder addGroupBuilder = WFCMessage.AddGroupMemberRequest.newBuilder();
         addGroupBuilder.setGroupId(group_id);
+        if(!StringUtil.isNullOrEmpty(member_extra)) {
+            addGroupBuilder.setExtra(member_extra);
+        }
         for (PojoGroupMember pojoGroupMember : getMembers()) {
             WFCMessage.GroupMember.Builder groupMemberBuilder = WFCMessage.GroupMember.newBuilder().setMemberId(pojoGroupMember.getMember_id());
             if (!StringUtil.isNullOrEmpty(pojoGroupMember.getAlias())) {

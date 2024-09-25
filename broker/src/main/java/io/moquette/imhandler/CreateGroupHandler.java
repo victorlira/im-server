@@ -63,7 +63,7 @@ public class CreateGroupHandler extends GroupHandler<WFCMessage.CreateGroupReque
             if(request.hasNotifyContent() && request.getNotifyContent().getType() > 0) {
                 sendGroupNotification(fromUser, groupInfo.getTargetId(), request.getToLineList(), request.getNotifyContent());
             } else {
-                WFCMessage.MessageContent content = new GroupNotificationBinaryContent(groupInfo.getTargetId(), fromUser, groupInfo.getName(), "").getCreateGroupNotifyContent();
+                WFCMessage.MessageContent content = new GroupNotificationBinaryContent(groupInfo.getTargetId(), fromUser, groupInfo.getName(), "").setExtra(request.getMemberExtra()).getCreateGroupNotifyContent();
                 sendGroupNotification(fromUser, groupInfo.getTargetId(), request.getToLineList(), content);
             }
         }

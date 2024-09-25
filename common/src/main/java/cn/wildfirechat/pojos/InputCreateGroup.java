@@ -16,6 +16,7 @@ import java.util.List;
 
 public class InputCreateGroup extends InputGroupBase {
     private PojoGroup group;
+    private String member_extra;
 
     public boolean isValide() {
         return true;
@@ -87,6 +88,9 @@ public class InputCreateGroup extends InputGroupBase {
 
         WFCMessage.CreateGroupRequest.Builder createGroupReqBuilder = WFCMessage.CreateGroupRequest.newBuilder();
         createGroupReqBuilder.setGroup(groupBuilder);
+        if(!StringUtil.isNullOrEmpty(member_extra)) {
+            createGroupReqBuilder.setMemberExtra(member_extra);
+        }
         if (to_lines != null) {
             for (Integer line : to_lines
             ) {
@@ -106,5 +110,13 @@ public class InputCreateGroup extends InputGroupBase {
 
     public void setGroup(PojoGroup group) {
         this.group = group;
+    }
+
+    public String getMember_extra() {
+        return member_extra;
+    }
+
+    public void setMember_extra(String member_extra) {
+        this.member_extra = member_extra;
     }
 }

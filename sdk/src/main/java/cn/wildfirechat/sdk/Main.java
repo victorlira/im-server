@@ -503,7 +503,7 @@ public class Main {
         member3.setMember_id("user3");
         members.add(member3);
 
-        IMResult<OutputCreateGroupResult> resultCreateGroup = GroupAdmin.createGroup(groupInfo.getOwner(), groupInfo, members, null, null);
+        IMResult<OutputCreateGroupResult> resultCreateGroup = GroupAdmin.createGroup(groupInfo.getOwner(), groupInfo, members, null, null, null);
         if (resultCreateGroup != null && resultCreateGroup.getErrorCode() == ErrorCode.ERROR_CODE_SUCCESS) {
             System.out.println("create group success");
         } else {
@@ -575,7 +575,7 @@ public class Main {
         m.setMember_id("user1");
         m.setAlias("hello user1");
 
-        voidIMResult = GroupAdmin.addGroupMembers("user1", groupInfo.getTarget_id(), Arrays.asList(m), null, null);
+        voidIMResult = GroupAdmin.addGroupMembers("user1", groupInfo.getTarget_id(), Arrays.asList(m), null, null, null);
         if (voidIMResult != null && voidIMResult.getErrorCode() == ErrorCode.ERROR_CODE_SUCCESS) {
             System.out.println("add group member success");
         } else {
@@ -1065,7 +1065,43 @@ public class Main {
             System.exit(-1);
         }
 
-        IMResult<Void> voidIMResult = ChannelAdmin.destroyChannel(inputCreateChannel.getTargetId());
+        String subscriber = "aaa";
+        IMResult<Void> voidIMResult = ChannelAdmin.subscribeChannel(inputCreateChannel.getTargetId(), subscriber);
+        if(voidIMResult != null && voidIMResult.getErrorCode() == ErrorCode.ERROR_CODE_SUCCESS) {
+            System.out.println("subscribeChannel success");
+        } else {
+            System.out.println("subscriber channel failure");
+            System.exit(-1);
+        }
+
+        Thread.sleep(100);
+        IMResult<OutputBooleanValue> booleanIMResult = ChannelAdmin.isUserSubscribedChannel(subscriber, inputCreateChannel.getTargetId());
+        if(booleanIMResult != null && booleanIMResult.getErrorCode() == ErrorCode.ERROR_CODE_SUCCESS && booleanIMResult.getResult().value) {
+            System.out.println("subscribe status is correct");
+        } else {
+            System.out.println("subscribe status is incorrect");
+            System.exit(-1);
+        }
+
+
+        voidIMResult = ChannelAdmin.unsubscribeChannel(inputCreateChannel.getTargetId(), subscriber);
+        if(voidIMResult != null && voidIMResult.getErrorCode() == ErrorCode.ERROR_CODE_SUCCESS) {
+            System.out.println("unsubscribeChannel success");
+        } else {
+            System.out.println("unsubscriber channel failure");
+            System.exit(-1);
+        }
+        Thread.sleep(100);
+
+        booleanIMResult = ChannelAdmin.isUserSubscribedChannel(subscriber, inputCreateChannel.getTargetId());
+        if(booleanIMResult != null && booleanIMResult.getErrorCode() == ErrorCode.ERROR_CODE_SUCCESS && !booleanIMResult.getResult().value) {
+            System.out.println("subscribe status is correct");
+        } else {
+            System.out.println("subscribe status is incorrect");
+            System.exit(-1);
+        }
+
+        voidIMResult = ChannelAdmin.destroyChannel(inputCreateChannel.getTargetId());
         if(voidIMResult != null && voidIMResult.getErrorCode() == ErrorCode.ERROR_CODE_SUCCESS) {
             System.out.println("success");
         } else {
@@ -1442,7 +1478,7 @@ public class Main {
         member3.setMember_id("user3");
         members.add(member3);
 
-        IMResult<OutputCreateGroupResult> resultCreateGroup = robotService.createGroup(groupInfo, members, null, null);
+        IMResult<OutputCreateGroupResult> resultCreateGroup = robotService.createGroup(groupInfo, members, null, null, null);
         if (resultCreateGroup != null && resultCreateGroup.getErrorCode() == ErrorCode.ERROR_CODE_SUCCESS) {
             System.out.println("create group success");
         } else {
@@ -1486,7 +1522,7 @@ public class Main {
         m.setMember_id("user0");
         m.setAlias("hello user0");
 
-        voidIMResult = robotService.addGroupMembers(groupInfo.getTarget_id(), Arrays.asList(m), null, null);
+        voidIMResult = robotService.addGroupMembers(groupInfo.getTarget_id(), Arrays.asList(m), null, null, null);
         if (voidIMResult != null && voidIMResult.getErrorCode() == ErrorCode.ERROR_CODE_SUCCESS) {
             System.out.println("add group member success");
         } else {

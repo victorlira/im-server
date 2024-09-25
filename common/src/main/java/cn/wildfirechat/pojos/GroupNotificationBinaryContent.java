@@ -13,6 +13,7 @@ import cn.wildfirechat.proto.WFCMessage;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.protobuf.ByteString;
+import io.netty.util.internal.StringUtil;
 
 import java.util.List;
 
@@ -31,6 +32,8 @@ public class GroupNotificationBinaryContent {
 
     //value2(member or something)
     private String m;
+
+    private String extra;
 
     public GroupNotificationBinaryContent() {
     }
@@ -89,8 +92,18 @@ public class GroupNotificationBinaryContent {
         this.ms = ms;
     }
 
+    public GroupNotificationBinaryContent setExtra(String extra) {
+        this.extra = extra;
+        return this;
+    }
+
     public WFCMessage.MessageContent getGroupNotifyContent(int groupContentType) {
-        return WFCMessage.MessageContent.newBuilder().setType(groupContentType).setData(ByteString.copyFromUtf8(new GsonBuilder().disableHtmlEscaping().create().toJson(this))).build();
+        WFCMessage.MessageContent.Builder builder = WFCMessage.MessageContent.newBuilder().setType(groupContentType).setData(ByteString.copyFromUtf8(new GsonBuilder().disableHtmlEscaping().create().toJson(this)));
+        if(!StringUtil.isNullOrEmpty(extra)) {
+            builder.setExtra(extra);
+        }
+        return builder.build();
+
     }
 
     public WFCMessage.MessageContent getAddGroupNotifyContent() {

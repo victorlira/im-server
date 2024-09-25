@@ -96,13 +96,14 @@ public class RobotService {
         return robotHttpUtils.httpJsonPost(path, pojo, Void.class);
     }
 
-    public IMResult<OutputCreateGroupResult> createGroup(PojoGroupInfo group_info, List<PojoGroupMember> members, List<Integer> to_lines, MessagePayload  notify_message) throws Exception {
+    public IMResult<OutputCreateGroupResult> createGroup(PojoGroupInfo group_info, List<PojoGroupMember> members, String member_extra, List<Integer> to_lines, MessagePayload  notify_message) throws Exception {
         String path = APIPath.Robot_Create_Group;
         PojoGroup pojoGroup = new PojoGroup();
         pojoGroup.setGroup_info(group_info);
         pojoGroup.setMembers(members);
         InputCreateGroup createGroup = new InputCreateGroup();
         createGroup.setGroup(pojoGroup);
+        createGroup.setMember_extra(member_extra);
         createGroup.setTo_lines(to_lines);
         createGroup.setNotify_message(notify_message);
 
@@ -163,11 +164,12 @@ public class RobotService {
         return robotHttpUtils.httpJsonPost(path, input, PojoGroupMember.class);
     }
 
-    public IMResult<Void> addGroupMembers(String groupId, List<PojoGroupMember> groupMembers, List<Integer> to_lines, MessagePayload  notify_message) throws Exception {
+    public IMResult<Void> addGroupMembers(String groupId, List<PojoGroupMember> groupMembers, String member_extra, List<Integer> to_lines, MessagePayload  notify_message) throws Exception {
         String path = APIPath.Robot_Group_Member_Add;
         InputAddGroupMember addGroupMember = new InputAddGroupMember();
         addGroupMember.setGroup_id(groupId);
         addGroupMember.setMembers(groupMembers);
+        addGroupMember.setMemberExtra(member_extra);
         addGroupMember.setTo_lines(to_lines);
         addGroupMember.setNotify_message(notify_message);
         return robotHttpUtils.httpJsonPost(path, addGroupMember, Void.class);

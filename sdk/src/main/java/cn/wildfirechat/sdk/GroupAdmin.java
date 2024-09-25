@@ -2,14 +2,13 @@ package cn.wildfirechat.sdk;
 
 import cn.wildfirechat.common.APIPath;
 import cn.wildfirechat.pojos.*;
-import cn.wildfirechat.proto.ProtoConstants;
 import cn.wildfirechat.sdk.model.IMResult;
 import cn.wildfirechat.sdk.utilities.AdminHttpUtils;
 
 import java.util.List;
 
 public class GroupAdmin {
-    public static IMResult<OutputCreateGroupResult> createGroup(String operator, PojoGroupInfo group_info, List<PojoGroupMember> members, List<Integer> to_lines, MessagePayload  notify_message) throws Exception {
+    public static IMResult<OutputCreateGroupResult> createGroup(String operator, PojoGroupInfo group_info, List<PojoGroupMember> members, String member_extra, List<Integer> to_lines, MessagePayload  notify_message) throws Exception {
         String path = APIPath.Create_Group;
         PojoGroup pojoGroup = new PojoGroup();
         pojoGroup.setGroup_info(group_info);
@@ -17,6 +16,7 @@ public class GroupAdmin {
         InputCreateGroup createGroup = new InputCreateGroup();
         createGroup.setGroup(pojoGroup);
         createGroup.setOperator(operator);
+        createGroup.setMember_extra(member_extra);
         createGroup.setTo_lines(to_lines);
         createGroup.setNotify_message(notify_message);
 
@@ -85,12 +85,13 @@ public class GroupAdmin {
         return AdminHttpUtils.httpJsonPost(path, input, PojoGroupMember.class);
     }
 
-    public static IMResult<Void> addGroupMembers(String operator, String groupId, List<PojoGroupMember> groupMembers, List<Integer> to_lines, MessagePayload  notify_message) throws Exception {
+    public static IMResult<Void> addGroupMembers(String operator, String groupId, List<PojoGroupMember> groupMembers, String member_extra, List<Integer> to_lines, MessagePayload  notify_message) throws Exception {
         String path = APIPath.Group_Member_Add;
         InputAddGroupMember addGroupMember = new InputAddGroupMember();
         addGroupMember.setGroup_id(groupId);
         addGroupMember.setMembers(groupMembers);
         addGroupMember.setOperator(operator);
+        addGroupMember.setMemberExtra(member_extra);
         addGroupMember.setTo_lines(to_lines);
         addGroupMember.setNotify_message(notify_message);
         return AdminHttpUtils.httpJsonPost(path, addGroupMember, Void.class);
