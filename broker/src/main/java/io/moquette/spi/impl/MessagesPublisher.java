@@ -451,6 +451,7 @@ public class MessagesPublisher {
         WFCMessage.Message message = m_messagesStore.getMessage(messageHead);
 
         if (message != null) {
+            message = message.toBuilder().setMessageId(0).setServerTimestamp(0).build();
             for (String user : receivers) {
                 Collection<Session> sessions = m_sessionsStore.sessionForUser(user);
 
