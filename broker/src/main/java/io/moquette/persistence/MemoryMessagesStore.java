@@ -75,7 +75,7 @@ import static io.moquette.BrokerConstants.*;
 import static io.moquette.server.Constants.MAX_CHATROOM_MESSAGE_QUEUE;
 import static io.moquette.server.Constants.MAX_MESSAGE_QUEUE;
 import static cn.wildfirechat.pojos.MyInfoType.*;
-import static win.liyufan.im.UserSettingScope.kUserSettingAddFriendNoVerify;
+import static win.liyufan.im.UserSettingScope.kUserSettingAddFriendStrategy;
 import static win.liyufan.im.UserSettingScope.kUserSettingPCOnline;
 
 public class MemoryMessagesStore implements IMessagesStore {
@@ -3400,8 +3400,13 @@ public class MemoryMessagesStore implements IMessagesStore {
         HazelcastInstance hzInstance = m_Server.getHazelcastInstance();
         MultiMap<String, WFCMessage.FriendRequest> requestMap = hzInstance.getMultiMap(USER_FRIENDS_REQUEST);
 
-        WFCMessage.UserSettingEntry userSettingData = getUserSetting(request.getTargetUid(), kUserSettingAddFriendNoVerify, "");
+        WFCMessage.UserSettingEntry userSettingData = getUserSetting(request.getTargetUid(), kUserSettingAddFriendStrategy, "");
         boolean noVerify = userSettingData != null && "1".equals(userSettingData.getValue());
+        boolean noAllow = userSettingData != null && "2".equals(userSettingData.getValue());
+
+        if(noAllow) {
+            return ErrorCode.ERROR_CODE_NOT_RIGHT;
+        }
 
         Collection<WFCMessage.FriendRequest> requests = requestMap.get(userId);
         if (requests == null || requests.size() == 0) {
