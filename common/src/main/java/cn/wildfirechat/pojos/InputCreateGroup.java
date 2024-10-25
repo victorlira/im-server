@@ -19,7 +19,7 @@ public class InputCreateGroup extends InputGroupBase {
     private String member_extra;
 
     public boolean isValide() {
-        return true;
+        return !StringUtil.isNullOrEmpty(operator) && group != null;
     }
 
     public WFCMessage.CreateGroupRequest toProtoGroupRequest() {
