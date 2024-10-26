@@ -8,9 +8,10 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BiConsumer;
 
 /**
  * 生成测试数据。本应用生成以下数据：
@@ -25,32 +26,32 @@ import java.util.function.BiConsumer;
  */
 public class GenerateTestData {
     //IM服务Server API
-    private static String AdminUrl = "http://localhost:18080";
+    private static String AdminUrl = "http://10.206.0.5:18080";
     private static String AdminSecret = "123456";
 
-    //系统内总用户数
-    private static int totalUserCount = 1000;
+    private static int totalUserCount = 20000;
 
     //每个用户的好友数
-    private static int friendCount = 5;
+    private static int friendCount = 100;
 
     //每个用户拥有的小群数，和小群的大小。
-    private static int smallGroupCount = 10;
+    private static int smallGroupCount = 100;
     private static int smallGroupMemberSize = 20;
 
     //每个用户拥有的中群数，和中群的大小。
-    private static int middleGroupCount = 5;
-    private static int middleGroupMemberSize = 40;
+    private static int middleGroupCount = 100;
+    private static int middleGroupMemberSize = 100;
 
     //每个用户拥有的大群数，和大群的大小。
-    private static int bigGroupCount = 2;
-    private static int bigGroupMemberSize = 200;
+    private static int bigGroupCount = 20;
+    private static int bigGroupMemberSize = 1000;
 
     //数据文件分割成几个文件存储。
-    private static int splitFileCount = 5;
+    private static int splitFileCount = 1;
+
 
     //统计添加好友数和创建群组数。
-    private static int addFriendCount = 0;
+    private static AtomicInteger addFriendCount = new AtomicInteger(0);
     private static AtomicInteger createGroupCount = new AtomicInteger(0);
 
     public static void main(String[] args) throws Exception {
@@ -64,18 +65,17 @@ public class GenerateTestData {
         System.out.println("创建大概 " + createSmallGroupCount + " 个小型群组");
         System.out.println("创建大概 " + createMiddleGroupCount + " 个中等群组");
         System.out.println("创建大概 " + createBigGroupCount + " 个大型群组");
-        Scanner scanner = new Scanner(System.in);
+        System.out.println("等待10秒开始");
+        Thread.sleep(10*1000);
 
-        System.out.print("是否确认？ (y/其他): ");
-        String input = scanner.nextLine().trim().toUpperCase();
+        List<String> userIds = generateUserIds(totalUserCount);
 
-        if (!input.equalsIgnoreCase("y")) {
-            System.exit(0);
-        }
-        scanner.close();
+        CountDownLatch latch = new CountDownLatch(5);
 
-        List<String> userIds = createUsers(totalUserCount);
-        CountDownLatch latch = new CountDownLatch(4);
+        new Thread(() -> {
+            createUsers(userIds);
+            latch.countDown();
+        }).start();
 
         Map<String, Integer> unfulfilledFriendMap = new HashMap<>();
         new Thread(() -> {
@@ -112,7 +112,7 @@ public class GenerateTestData {
 
         latch.await();
 
-        System.out.println("数据初始化结束，实际建立好友关系: " + addFriendCount + " 条。");
+        System.out.println("数据初始化结束，实际建立好友关系: " + addFriendCount.get() + " 条。");
         if (!unfulfilledFriendMap.isEmpty()) {
             System.out.println("有部分用户没有建立" + friendCount + "个好友关系，分别是：");
             printUnfulfilledMap(unfulfilledFriendMap);
@@ -159,7 +159,7 @@ public class GenerateTestData {
         if(map.isEmpty())
             return;
 
-        map.forEach((s, integer) -> System.out.print(s + ":" + integer));
+        map.forEach((s, integer) -> System.out.print(s + ":" + integer + " "));
         System.out.println();
     }
 
@@ -238,13 +238,14 @@ public class GenerateTestData {
 
             createGroupCount.incrementAndGet();
             if(memberIds.size() < memberSize) {
-                unfulfilledUserMap.put(userId + ",s group " + groupInfo.getTarget_id(), memberIds.size());
+                unfulfilledUserMap.put(userId + "'s group " + groupInfo.getTarget_id(), memberIds.size());
                 System.out.println("Error, can not find enough user to create group for user:" + userId);
             }
         }
     }
 
     private static void addFriends(List<String> userIds, int count, Map<String, Integer> unfulfilledFriendMap) {
+        ConcurrentLinkedQueue<Pair<String, String>> toAddSet = new ConcurrentLinkedQueue<>();
         Map<String, Set<String>> userFriends = new HashMap<>();
         for (String userId : userIds) {
             List<String> candidates = new ArrayList<>(userIds);
@@ -261,19 +262,7 @@ public class GenerateTestData {
                     if(targetUserFriends.size() < count) {
                         currentUserFriends.add(friendId);
                         targetUserFriends.add(userId);
-                        try {
-                            IMResult<Void> result = RelationAdmin.setUserFriend(userId, friendId, true, null);
-                            if (result != null && (result.getErrorCode() == ErrorCode.ERROR_CODE_SUCCESS || result.getErrorCode() == ErrorCode.ERROR_CODE_ALREADY_FRIENDS)) {
-                                System.out.println("add friend success");
-                                addFriendCount++;
-                            } else {
-                                System.out.println("failure");
-                                System.exit(-1);
-                            }
-                        } catch (Exception e) {
-                            System.out.println("failure:" + e);
-                            System.exit(-1);
-                        }
+                        toAddSet.add(new Pair<>(userId, friendId));
                     }
                 }
             }
@@ -282,27 +271,72 @@ public class GenerateTestData {
                 System.out.println("Error, can not find enough user to add friend for user:" + userId);
             }
         }
+        int threadNum = 5;
+        CountDownLatch latch = new CountDownLatch(threadNum);
+        for (int i = 0; i < threadNum; i++) {
+            new Thread(() -> {
+                while (true) {
+                    Pair<String, String> pair = toAddSet.poll();
+                    if(pair == null) {
+                        latch.countDown();
+                        break;
+                    }
+                    try {
+                        IMResult<Void> result = RelationAdmin.setUserFriend(pair.first, pair.second, true, null);
+                        if (result != null && (result.getErrorCode() == ErrorCode.ERROR_CODE_SUCCESS || result.getErrorCode() == ErrorCode.ERROR_CODE_ALREADY_FRIENDS)) {
+                            System.out.println("add friend success");
+                            addFriendCount.incrementAndGet();
+                        } else {
+                            System.out.println("failure");
+                            System.exit(-1);
+                        }
+                    } catch (Exception e) {
+                        System.out.println("failure:" + e);
+                        System.exit(-1);
+                    }
+                }
+            }).start();
+        }
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            System.out.println("failure:" + e);
+            System.exit(-1);
+        }
     }
 
-    private static List<String> createUsers(int count) throws Exception {
+    private static String generateUserId(int index) {
+        return UUID.randomUUID().toString().replace("-", "");
+    }
+
+    private static List<String> generateUserIds(int count) {
         List<String> userIds = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            InputOutputUserInfo userInfo = generateUserInfo(i);
-            IMResult<OutputCreateUser> resultCreateUser = UserAdmin.createUser(userInfo);
-            if (resultCreateUser != null && resultCreateUser.getErrorCode() == ErrorCode.ERROR_CODE_SUCCESS) {
-                System.out.println("Create user " + resultCreateUser.getResult().getName() + " success");
-            } else {
-                System.out.println("Create user failure");
-                System.exit(-1);
-            }
-            userIds.add(userInfo.getUserId());
+            userIds.add(generateUserId(i));
         }
         return userIds;
     }
 
-    private static InputOutputUserInfo generateUserInfo(int index) {
+    private static void createUsers(List<String> userIds) {
+        for (int i = 0; i < userIds.size(); i++) {
+            InputOutputUserInfo userInfo = generateUserInfo(userIds.get(i), i);
+            try {
+                IMResult<OutputCreateUser> resultCreateUser = UserAdmin.createUser(userInfo);
+                if (resultCreateUser != null && resultCreateUser.getErrorCode() == ErrorCode.ERROR_CODE_SUCCESS) {
+                    System.out.println("Create user " + resultCreateUser.getResult().getName() + " success");
+                } else {
+                    System.out.println("Create user failure");
+                    System.exit(-1);
+                }
+            } catch (Exception e) {
+                System.out.println("Create user failure");
+                System.exit(-1);
+            }
+        }
+    }
+
+    private static InputOutputUserInfo generateUserInfo(String userId, int index) {
         InputOutputUserInfo userInfo = new InputOutputUserInfo();
-        String userId = UUID.randomUUID().toString().replace("-", "");
         //用户ID，必须保证唯一性
         userInfo.setUserId(userId);
         //用户名，一般是用户登录帐号，也必须保证唯一性。也就是说所有用户的userId必须不能重复，所有用户的name必须不能重复，但可以同一个用户的userId和name是同一个，一般建议userId使用一个uuid，name是"微信号"且可以修改，
@@ -311,5 +345,17 @@ public class GenerateTestData {
         userInfo.setDisplayName("User"+index);
 
         return userInfo;
+    }
+    static class Pair<K, V> {
+        K first;
+        V second;
+
+        public Pair() {
+        }
+
+        public Pair(K first, V second) {
+            this.first = first;
+            this.second = second;
+        }
     }
 }
