@@ -81,13 +81,7 @@ public class MessageAdmin {
         return AdminHttpUtils.httpJsonPost(path, inputMessageUid, OutputMessageData.class);
     }
 
-    /**
-     * 撤回群发或者广播的消息
-     * @param operator 操作者
-     * @param messageUid 消息唯一ID
-     * @return
-     * @throws Exception
-     */
+    //仅专业版支持
     public static IMResult<Void> recallBroadCastMessage(String operator, long messageUid) throws Exception {
         String path = APIPath.Msg_RecallBroadCast;
         RecallMessageData messageData = new RecallMessageData();
@@ -102,10 +96,28 @@ public class MessageAdmin {
         messageData.operator = operator;
         messageData.messageUid = messageUid;
         messageData.receivers = receivers;
-
         return AdminHttpUtils.httpJsonPost(path, messageData, Void.class);
     }
 
+    //仅专业版支持
+    public static IMResult<Void> deleteBroadCastMessage(String operator, long messageUid) throws Exception {
+        String path = APIPath.Msg_DeleteBroadCast;
+        RecallMessageData messageData = new RecallMessageData();
+        messageData.setOperator(operator);
+        messageData.setMessageUid(messageUid);
+        return AdminHttpUtils.httpJsonPost(path, messageData, Void.class);
+    }
+
+    public static IMResult<Void> deleteMultiCastMessage(String operator, long messageUid, List<String> receivers) throws Exception {
+        String path = APIPath.Msg_DeleteMultiCast;
+        RecallMultiCastMessageData messageData = new RecallMultiCastMessageData();
+        messageData.operator = operator;
+        messageData.messageUid = messageUid;
+        messageData.receivers = receivers;
+        return AdminHttpUtils.httpJsonPost(path, messageData, Void.class);
+    }
+
+    //仅专业版支持
     public static IMResult<BroadMessageResult> broadcastMessage(String sender, int line, MessagePayload payload) throws Exception {
         String path = APIPath.Msg_Broadcast;
         BroadMessageData messageData = new BroadMessageData();

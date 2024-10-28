@@ -71,6 +71,8 @@ public interface APIPath {
     String Msg_Multicast = "/admin/message/multicast";
     String Msg_RecallBroadCast = "/admin/message/recall_broadcast";
     String Msg_RecallMultiCast = "/admin/message/recall_multicast";
+    String Msg_DeleteBroadCast = "/admin/message/delete_broadcast";
+    String Msg_DeleteMultiCast = "/admin/message/delete_multicast";
     String Msg_ConvRead = "/admin/message/conv_read";
     String Msg_Delivery = "/admin/message/delivery";
     String Conversation_Delete = "/admin/conversation/delete";
