@@ -1,7 +1,9 @@
 package cn.wildfirechat.sdk;
 
 import cn.wildfirechat.common.APIPath;
+import cn.wildfirechat.common.ErrorCode;
 import cn.wildfirechat.pojos.*;
+import cn.wildfirechat.pojos.moments.*;
 import cn.wildfirechat.sdk.model.IMResult;
 import cn.wildfirechat.sdk.utilities.RobotHttpUtils;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -96,7 +98,7 @@ public class RobotService {
         return robotHttpUtils.httpJsonPost(path, pojo, Void.class);
     }
 
-    public IMResult<OutputCreateGroupResult> createGroup(PojoGroupInfo group_info, List<PojoGroupMember> members, String member_extra, List<Integer> to_lines, MessagePayload  notify_message) throws Exception {
+    public IMResult<OutputCreateGroupResult> createGroup(PojoGroupInfo group_info, List<PojoGroupMember> members, String member_extra, List<Integer> to_lines, MessagePayload notify_message) throws Exception {
         String path = APIPath.Robot_Create_Group;
         PojoGroup pojoGroup = new PojoGroup();
         pojoGroup.setGroup_info(group_info);
@@ -118,7 +120,7 @@ public class RobotService {
         return robotHttpUtils.httpJsonPost(path, input, PojoGroupInfo.class);
     }
 
-    public IMResult<Void> dismissGroup(String groupId, List<Integer> to_lines, MessagePayload  notify_message) throws Exception {
+    public IMResult<Void> dismissGroup(String groupId, List<Integer> to_lines, MessagePayload notify_message) throws Exception {
         String path = APIPath.Robot_Group_Dismiss;
         InputDismissGroup dismissGroup = new InputDismissGroup();
         dismissGroup.setGroup_id(groupId);
@@ -127,7 +129,7 @@ public class RobotService {
         return robotHttpUtils.httpJsonPost(path, dismissGroup, Void.class);
     }
 
-    public IMResult<Void> transferGroup(String groupId, String newOwner, List<Integer> to_lines, MessagePayload  notify_message) throws Exception {
+    public IMResult<Void> transferGroup(String groupId, String newOwner, List<Integer> to_lines, MessagePayload notify_message) throws Exception {
         String path = APIPath.Robot_Group_Transfer;
         InputTransferGroup transferGroup = new InputTransferGroup();
         transferGroup.setGroup_id(groupId);
@@ -137,7 +139,7 @@ public class RobotService {
         return robotHttpUtils.httpJsonPost(path, transferGroup, Void.class);
     }
 
-    public IMResult<Void> modifyGroupInfo(String groupId, /*ModifyGroupInfoType*/int type, String value, List<Integer> to_lines, MessagePayload  notify_message) throws Exception {
+    public IMResult<Void> modifyGroupInfo(String groupId, /*ModifyGroupInfoType*/int type, String value, List<Integer> to_lines, MessagePayload notify_message) throws Exception {
         String path = APIPath.Robot_Group_Modify_Info;
         InputModifyGroupInfo modifyGroupInfo = new InputModifyGroupInfo();
         modifyGroupInfo.setGroup_id(groupId);
@@ -164,7 +166,7 @@ public class RobotService {
         return robotHttpUtils.httpJsonPost(path, input, PojoGroupMember.class);
     }
 
-    public IMResult<Void> addGroupMembers(String groupId, List<PojoGroupMember> groupMembers, String member_extra, List<Integer> to_lines, MessagePayload  notify_message) throws Exception {
+    public IMResult<Void> addGroupMembers(String groupId, List<PojoGroupMember> groupMembers, String member_extra, List<Integer> to_lines, MessagePayload notify_message) throws Exception {
         String path = APIPath.Robot_Group_Member_Add;
         InputAddGroupMember addGroupMember = new InputAddGroupMember();
         addGroupMember.setGroup_id(groupId);
@@ -175,7 +177,7 @@ public class RobotService {
         return robotHttpUtils.httpJsonPost(path, addGroupMember, Void.class);
     }
 
-    public IMResult<Void> setGroupManager(String groupId, List<String> groupMemberIds, boolean isManager, List<Integer> to_lines, MessagePayload  notify_message) throws Exception {
+    public IMResult<Void> setGroupManager(String groupId, List<String> groupMemberIds, boolean isManager, List<Integer> to_lines, MessagePayload notify_message) throws Exception {
         String path = APIPath.Robot_Group_Set_Manager;
         InputSetGroupManager addGroupMember = new InputSetGroupManager();
         addGroupMember.setGroup_id(groupId);
@@ -186,7 +188,7 @@ public class RobotService {
         return robotHttpUtils.httpJsonPost(path, addGroupMember, Void.class);
     }
 
-    public IMResult<Void> muteGroupMember(String groupId, List<String> groupMemberIds, boolean isMute, List<Integer> to_lines, MessagePayload  notify_message) throws Exception {
+    public IMResult<Void> muteGroupMember(String groupId, List<String> groupMemberIds, boolean isMute, List<Integer> to_lines, MessagePayload notify_message) throws Exception {
         String path = APIPath.Robot_Group_Mute_Member;
         InputMuteGroupMember addGroupMember = new InputMuteGroupMember();
         addGroupMember.setGroup_id(groupId);
@@ -197,7 +199,7 @@ public class RobotService {
         return robotHttpUtils.httpJsonPost(path, addGroupMember, Void.class);
     }
 
-    public IMResult<Void> allowGroupMember(String groupId, List<String> groupMemberIds, boolean isAllow, List<Integer> to_lines, MessagePayload  notify_message) throws Exception {
+    public IMResult<Void> allowGroupMember(String groupId, List<String> groupMemberIds, boolean isAllow, List<Integer> to_lines, MessagePayload notify_message) throws Exception {
         String path = APIPath.Robot_Group_Allow_Member;
         InputMuteGroupMember addGroupMember = new InputMuteGroupMember();
         addGroupMember.setGroup_id(groupId);
@@ -208,7 +210,7 @@ public class RobotService {
         return robotHttpUtils.httpJsonPost(path, addGroupMember, Void.class);
     }
 
-    public IMResult<Void> kickoffGroupMembers(String groupId, List<String> groupMemberIds, List<Integer> to_lines, MessagePayload  notify_message) throws Exception {
+    public IMResult<Void> kickoffGroupMembers(String groupId, List<String> groupMemberIds, List<Integer> to_lines, MessagePayload notify_message) throws Exception {
         String path = APIPath.Robot_Group_Member_Kickoff;
         InputKickoffGroupMember kickoffGroupMember = new InputKickoffGroupMember();
         kickoffGroupMember.setGroup_id(groupId);
@@ -218,7 +220,7 @@ public class RobotService {
         return robotHttpUtils.httpJsonPost(path, kickoffGroupMember, Void.class);
     }
 
-    public IMResult<Void> quitGroup(String groupId, List<Integer> to_lines, MessagePayload  notify_message) throws Exception {
+    public IMResult<Void> quitGroup(String groupId, List<Integer> to_lines, MessagePayload notify_message) throws Exception {
         String path = APIPath.Robot_Group_Member_Quit;
         InputQuitGroup quitGroup = new InputQuitGroup();
         quitGroup.setGroup_id(groupId);
@@ -227,7 +229,7 @@ public class RobotService {
         return robotHttpUtils.httpJsonPost(path, quitGroup, Void.class);
     }
 
-    public IMResult<Void> setGroupMemberAlias(String groupId, String memberId, String alias, List<Integer> to_lines, MessagePayload  notify_message) throws Exception {
+    public IMResult<Void> setGroupMemberAlias(String groupId, String memberId, String alias, List<Integer> to_lines, MessagePayload notify_message) throws Exception {
         String path = APIPath.Robot_Group_Set_Member_Alias;
         InputSetGroupMemberAlias input = new InputSetGroupMemberAlias();
         input.setGroup_id(groupId);
@@ -238,7 +240,7 @@ public class RobotService {
         return robotHttpUtils.httpJsonPost(path, input, Void.class);
     }
 
-    public IMResult<Void> setGroupMemberExtra(String groupId, String memberId, String extra, List<Integer> to_lines, MessagePayload  notify_message) throws Exception {
+    public IMResult<Void> setGroupMemberExtra(String groupId, String memberId, String extra, List<Integer> to_lines, MessagePayload notify_message) throws Exception {
         String path = APIPath.Robot_Group_Set_Member_Extra;
         InputSetGroupMemberExtra input = new InputSetGroupMemberExtra();
         input.setGroup_id(groupId);
@@ -276,4 +278,130 @@ public class RobotService {
         return robotHttpUtils.httpJsonPost(path, input, String.class);
     }
 
+    public IMResult<FeedPojo> postMomentsFeed(int/*MomentsContentType*/ type, String text, List<MediaEntry> medias, List<String> toUsers, List<String> excludeUsers, List<String> mentionedUsers, String extra) throws Exception {
+        String path = APIPath.Robot_Moments_Post_Feed;
+        FeedPojo feedPojo = new FeedPojo();
+        feedPojo.type = type;
+        feedPojo.text = text;
+        feedPojo.medias = medias;
+        feedPojo.to = toUsers;
+        feedPojo.ex = excludeUsers;
+        feedPojo.mu = mentionedUsers;
+        feedPojo.extra = extra;
+        IMResult<PostFeedResult> imResult = robotHttpUtils.httpJsonPost(path, feedPojo, PostFeedResult.class);
+        IMResult<FeedPojo> feedResult = new IMResult<>();
+        if(imResult.getErrorCode() == ErrorCode.ERROR_CODE_SUCCESS) {
+            feedPojo.feedId = imResult.result.id;
+            feedPojo.timestamp = imResult.result.timestamp;
+            feedResult.setCode(ErrorCode.ERROR_CODE_SUCCESS.getCode());
+            feedResult.setResult(feedPojo);
+        } else {
+            feedResult.setCode(imResult.getCode());
+            feedResult.setMsg(imResult.getMsg());
+        }
+        return feedResult;
+    }
+
+    public IMResult<FeedsPojo> getMomentsFeeds(long feedId, int count, String user) throws Exception {
+        String path = APIPath.Robot_Moments_Pull_Feeds;
+        PullFeedRequestPojo requestPojo = new PullFeedRequestPojo();
+        requestPojo.feedId = feedId;
+        requestPojo.count = count;
+        requestPojo.user = user;
+        return robotHttpUtils.httpJsonPost(path, requestPojo, FeedsPojo.class);
+    }
+
+    public IMResult<FeedPojo> getMomentsFeed(long feedId) throws Exception {
+        String path = APIPath.Robot_Moments_Fetch_Feed;
+        PullOneFeedRequestPojo requestPojo = new PullOneFeedRequestPojo();
+        requestPojo.feedId = feedId;
+        return robotHttpUtils.httpJsonPost(path, requestPojo, FeedPojo.class);
+    }
+
+    public IMResult<Void> deleteMomentsFeed(long feedId) throws Exception {
+        String path = APIPath.Robot_Moments_Recall_Feed;
+        IdPojo requestPojo = new IdPojo();
+        requestPojo.id = feedId;
+        return robotHttpUtils.httpJsonPost(path, requestPojo, Void.class);
+    }
+
+    public IMResult<CommentPojo> postMomentsComment(long feedId, long replyId, int/*MomentsCommentType*/ type, String text, String replyTo, String extra) throws Exception {
+        String path = APIPath.Robot_Moments_Post_Comment;
+        CommentPojo commentPojo = new CommentPojo();
+        commentPojo.type = type;
+        commentPojo.text = text;
+        commentPojo.replyId = replyId;
+        commentPojo.feedId = feedId;
+        commentPojo.replyTo = replyTo;
+        commentPojo.extra = extra;
+        IMResult<PostFeedResult> imResult = robotHttpUtils.httpJsonPost(path, commentPojo, PostFeedResult.class);
+        IMResult<CommentPojo> feedResult = new IMResult<>();
+        if(imResult.getErrorCode() == ErrorCode.ERROR_CODE_SUCCESS) {
+            commentPojo.commentId = imResult.result.id;
+            commentPojo.timestamp = imResult.result.timestamp;
+            feedResult.setCode(ErrorCode.ERROR_CODE_SUCCESS.getCode());
+            feedResult.setResult(commentPojo);
+        } else {
+            feedResult.setCode(imResult.getCode());
+            feedResult.setMsg(imResult.getMsg());
+        }
+        return feedResult;
+    }
+
+    public IMResult<Void> deleteMomentsComment(long feedId, long commentId) throws Exception {
+        String path = APIPath.Robot_Moments_Recall_Comment;
+        IdPojo requestPojo = new IdPojo();
+        requestPojo.id = commentId;
+        requestPojo.id2 = feedId;
+        return robotHttpUtils.httpJsonPost(path, requestPojo, Void.class);
+    }
+
+    public IMResult<MomentProfilePojo> getUserMomentsProfile(String userId) throws Exception {
+        String path = APIPath.Robot_Moments_Fetch_Profiles;
+        PullProfileRequestPojo requestPojo = new PullProfileRequestPojo();
+        requestPojo.u = userId;
+        return robotHttpUtils.httpJsonPost(path, requestPojo, MomentProfilePojo.class);
+    }
+
+    public IMResult<Void> updateMomentsBackgroundUrl(String url) throws Exception {
+        String path = APIPath.Robot_Moments_Update_Profiles_Value;
+        PushProfileValueRequestPojo requestPojo = new PushProfileValueRequestPojo();
+        requestPojo.t = 0;
+        requestPojo.v = url;
+        return robotHttpUtils.httpJsonPost(path, requestPojo, Void.class);
+    }
+
+    public IMResult<Void> updateMomentsStrangerVisibleCount(int count) throws Exception {
+        String path = APIPath.Robot_Moments_Update_Profiles_Value;
+        PushProfileValueRequestPojo requestPojo = new PushProfileValueRequestPojo();
+        requestPojo.t = 1;
+        requestPojo.i = count;
+        return robotHttpUtils.httpJsonPost(path, requestPojo, Void.class);
+    }
+
+    public IMResult<Void> updateMomentsVisibleScope(int/*MomentsVisibleScope*/ scope) throws Exception {
+        String path = APIPath.Robot_Moments_Update_Profiles_Value;
+        PushProfileValueRequestPojo requestPojo = new PushProfileValueRequestPojo();
+        requestPojo.t = 2;
+        requestPojo.i = scope;
+        return robotHttpUtils.httpJsonPost(path, requestPojo, Void.class);
+    }
+
+    public IMResult<Void> updateMomentsBlackList(List<String> addList, List<String> removeList) throws Exception {
+        String path = APIPath.Robot_Moments_Update_Profiles_List_Value;
+        PushProfileListRequestPojo requestPojo = new PushProfileListRequestPojo();
+        requestPojo.b = false;
+        requestPojo.al = addList;
+        requestPojo.rl = removeList;
+        return robotHttpUtils.httpJsonPost(path, requestPojo, Void.class);
+    }
+
+    public IMResult<Void> updateMomentsBlockList(List<String> addList, List<String> removeList) throws Exception {
+        String path = APIPath.Robot_Moments_Update_Profiles_List_Value;
+        PushProfileListRequestPojo requestPojo = new PushProfileListRequestPojo();
+        requestPojo.b = true;
+        requestPojo.al = addList;
+        requestPojo.rl = removeList;
+        return robotHttpUtils.httpJsonPost(path, requestPojo, Void.class);
+    }
 }

@@ -1,6 +1,10 @@
 package cn.wildfirechat.sdk;
 
 import cn.wildfirechat.common.ErrorCode;
+import cn.wildfirechat.pojos.moments.CommentPojo;
+import cn.wildfirechat.pojos.moments.FeedPojo;
+import cn.wildfirechat.pojos.moments.FeedsPojo;
+import cn.wildfirechat.pojos.moments.MomentProfilePojo;
 import cn.wildfirechat.proto.WFCMessage;
 import cn.wildfirechat.sdk.messagecontent.*;
 import cn.wildfirechat.pojos.*;
@@ -19,6 +23,7 @@ import static cn.wildfirechat.proto.ProtoConstants.SystemSettingType.Group_Max_M
 public class Main {
     private static boolean commercialServer = false;
     private static boolean advanceVoip = false;
+    private static boolean robotMomentsEnabled = false;
     //管理端口是8080
     private static String AdminUrl = "http://localhost:18080";
     private static String AdminSecret = "123456";
@@ -1575,8 +1580,6 @@ public class Main {
             System.out.println(config);
         }
 
-
-
         //仅专业版支持
         if (commercialServer) {
             //开启群成员禁言
@@ -1643,6 +1646,82 @@ public class Main {
             System.exit(-1);
         }
 
+        //仅专业版支持，且服务器端支持朋友圈
+        if (robotMomentsEnabled) {
+            IMResult<FeedPojo> postResult = robotService.postMomentsFeed(ProtoConstants.MomentsContentType.Moments_Content_Text_Type, "hello from robot", null, null, null, null, null);
+            if (postResult.getErrorCode() == ErrorCode.ERROR_CODE_SUCCESS) {
+                System.out.println("post moments feed success");
+            } else {
+                System.out.println("post moments feed failure:" + postResult.getErrorCode().code);
+                System.exit(-1);
+            }
+
+            IMResult<FeedsPojo> pullResult = robotService.getMomentsFeeds(0, 10, null);
+            if (pullResult.getErrorCode() == ErrorCode.ERROR_CODE_SUCCESS) {
+                System.out.println("pull moments feeds success");
+            } else {
+                System.out.println("pull moments feeds failure:" + pullResult.getErrorCode().code);
+                System.exit(-1);
+            }
+
+            if(!pullResult.getResult().feeds.isEmpty()) {
+                IMResult<FeedPojo> feedResult = robotService.getMomentsFeed(pullResult.getResult().feeds.get(0).feedId);
+                if (feedResult.getErrorCode() == ErrorCode.ERROR_CODE_SUCCESS) {
+                    System.out.println("pull moments one feed success");
+                } else {
+                    System.out.println("pull moments one feed failure:" + feedResult.getErrorCode().code);
+                    System.exit(-1);
+                }
+            }
+
+            IMResult<CommentPojo> commentThumbUpResult = robotService.postMomentsComment(postResult.result.feedId, 0, ProtoConstants.MomentsCommentType.Moments_Comment_Thumbup_Type, null, null, null);
+            if (commentThumbUpResult.getErrorCode() == ErrorCode.ERROR_CODE_SUCCESS) {
+                System.out.println("post moments thumb up success");
+            } else {
+                System.out.println("post moments thumb up failure:" + commentThumbUpResult.getErrorCode().code);
+                System.exit(-1);
+            }
+
+            IMResult<CommentPojo> commentTextResult = robotService.postMomentsComment(postResult.result.feedId, 0, ProtoConstants.MomentsCommentType.Moments_Comment_Text_Type, "comment hello", null, null);
+            if (commentTextResult.getErrorCode() == ErrorCode.ERROR_CODE_SUCCESS) {
+                System.out.println("post moments comment text success");
+            } else {
+                System.out.println("post moments comment text failure:" + commentTextResult.getErrorCode().code);
+                System.exit(-1);
+            }
+
+            IMResult<Void> deleteCommentThumbUpResult = robotService.deleteMomentsComment(postResult.result.feedId, commentThumbUpResult.result.commentId);
+            if (deleteCommentThumbUpResult.getErrorCode() == ErrorCode.ERROR_CODE_SUCCESS) {
+                System.out.println("delete moments thumb up success");
+            } else {
+                System.out.println("delete moments thumb up failure:" + deleteCommentThumbUpResult.getErrorCode().code);
+                System.exit(-1);
+            }
+
+            IMResult<Void> deleteCommentTextResult = robotService.deleteMomentsComment(postResult.result.feedId, commentTextResult.result.commentId);
+            if (deleteCommentTextResult.getErrorCode() == ErrorCode.ERROR_CODE_SUCCESS) {
+                System.out.println("delete moments comment text success");
+            } else {
+                System.out.println("delete moments comment text failure:" + deleteCommentTextResult.getErrorCode().code);
+                System.exit(-1);
+            }
+
+            IMResult<Void> deleteFeedResult = robotService.deleteMomentsFeed(postResult.result.feedId);
+            if (deleteFeedResult.getErrorCode() == ErrorCode.ERROR_CODE_SUCCESS) {
+                System.out.println("delete moments feed success");
+            } else {
+                System.out.println("delete moments feed failure:" + deleteFeedResult.getErrorCode().code);
+                System.exit(-1);
+            }
+
+            IMResult<MomentProfilePojo> profileResult = robotService.getUserMomentsProfile(robotId);
+            if (profileResult.getErrorCode() == ErrorCode.ERROR_CODE_SUCCESS) {
+                System.out.println("get user moments profile success");
+            } else {
+                System.out.println("get user moments profile failure:" + profileResult.getErrorCode().code);
+                System.exit(-1);
+            }
+        }
     }
 
     //***测试频道API功能，仅专业版支持***

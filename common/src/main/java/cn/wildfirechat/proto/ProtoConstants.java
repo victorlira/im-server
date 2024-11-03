@@ -347,6 +347,25 @@ public class ProtoConstants {
         int Forbidden_Mute_Group_Member = 0x800;
     }
 
+    public interface MomentsContentType {
+        int Moments_Content_Text_Type = 0;
+        int Moments_Content_Image_Type = 1;
+        int Moments_Content_Video_Type = 2;
+        int Moments_Content_Link_Type = 3;
+    }
+
+    public interface MomentsCommentType {
+        int Moments_Comment_Text_Type = 0;
+        int Moments_Comment_Thumbup_Type = 1;
+    }
+
+    public interface MomentsVisibleScope {
+        int Moments_VisibleScope_NoLimit = 0;
+        int Moments_VisibleScope_3Days = 1;
+        int Moments_VisibleScope_1Month = 2;
+        int Moments_VisibleScope_6Months = 3;
+    };
+
     public static final int MESSAGE_CONTENT_TYPE_CREATE_GROUP = 104;
     public static final int MESSAGE_CONTENT_TYPE_ADD_GROUP_MEMBER = 105;
     public static final int MESSAGE_CONTENT_TYPE_KICKOF_GROUP_MEMBER = 106;

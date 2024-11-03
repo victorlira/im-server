@@ -157,5 +157,16 @@ public interface APIPath {
     String Robot_Group_Transfer = "/robot/group/transfer";
     String Robot_Group_Set_Manager = "/robot/group/manager/set";
 
+    String Robot_Moments_Post_Feed = "/robot/moments/feed/post";
+    String Robot_Moments_Pull_Feeds = "/robot/moments/feed/pull";
+    String Robot_Moments_Post_Comment = "/robot/moments/comment/post";
+    String Robot_Moments_Pull_Comment = "/robot/moments/comment/pull";
+    String Robot_Moments_Fetch_Feed = "/robot/moments/feed/pull_one";
+    String Robot_Moments_Fetch_Profiles = "/robot/moments/profiles/pull";
+    String Robot_Moments_Recall_Comment = "/robot/moments/comment/recall";
+    String Robot_Moments_Recall_Feed = "/robot/moments/feed/recall";
+    String Robot_Moments_Update_Profiles_List_Value = "/robot/moments/profiles/list/push";
+    String Robot_Moments_Update_Profiles_Value = "/robot/moments/profiles/value/push";
+
     String Robot_Conference_Request = "/robot/conference/request";
 }
